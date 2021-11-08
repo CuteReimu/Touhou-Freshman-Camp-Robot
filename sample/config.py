@@ -21,9 +21,9 @@ qq = {
     'available_qq_group': ['12345678', '23456789']  # 接收消息的QQ群
 }
 
-debug_mode = False
-
 logging_config = {
     'log_path': '../logs',
-    'level': logging.DEBUG
+    'console_level': logging.DEBUG,
+    'console_file_level': logging.INFO,
+    'error_file_level': logging.WARN
 }

@@ -24,6 +24,6 @@ qq = {
 debug_mode = False
 
 logging_config = {
-    'log_file': '../logs/robot_log.log',
+    'log_path': '../logs',
     'level': logging.DEBUG
 }

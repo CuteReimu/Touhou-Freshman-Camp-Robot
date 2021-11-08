@@ -1,2 +1,3 @@
-# Touhou-Freshman-Camp-Robot
-The QQ Chat robot of Touhou Freshman Camp.
+# 东方Project沙包聚集地机器人
+这是东方Project沙包聚集地（以下简称“红群”）的机器人
+README待完善

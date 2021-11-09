@@ -1,10 +1,10 @@
 import logging
 
 myqq = {
-    'token': 'qsfsqwdqwe1431c443c',
-    'api_url': 'http://localhost:10100/MyQQHTTPAPI',
+    'token': 'dsageqrewghbtwhwertt',
+    'api_url': 'http://localhost:12346/MyQQHTTPAPI',
     'callback_ip': '127.0.0.1',
-    'callback_port': 10111
+    'callback_port': 12345
 }
 
 bilibili = {

@@ -1,7 +1,8 @@
-from logging import handlers
 import logging
-import config
 import os
+from logging import handlers
+
+import config
 
 __l = logging.getLogger('robot')
 

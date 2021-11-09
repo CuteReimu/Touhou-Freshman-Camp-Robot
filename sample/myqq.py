@@ -1,13 +1,14 @@
 import json
-import logger
-import config
+
 import requests
-from message import Dispatcher
 from flask import Flask, request
 from gevent import pywsgi
 
+import config
+import logger
+import message
+
 app = Flask(__name__)
-dispatcher = Dispatcher()
 
 
 # 启动MyQQ的HTTP回调接口
@@ -35,26 +36,38 @@ def deal_with_message():
         return json.dumps({"status": 0, "msg": "bad request"})
     if from_qq != config.qq['robot_self_qq'] and from_id in config.qq['available_qq_group']:
         arr = msg.split('+')  # MyQQ会自动把空格转为加号，所以这里要用+分隔
-        d = dispatcher.messages.get(arr[0])
+        d = message.messages.get(arr[0])
         if d is not None and d.check_auth(from_qq):
             logger.info("%s说：%s", from_qq, msg)
-            d.execute(from_qq, arr[1:])
+            d.execute(from_qq, *arr[1:])
     return json.dumps({"status": 1})
 
 
 def send_group_message(qq_group_number: str, msg: str):
-    data = json.dumps({
-        'function': 'Api_SendMsg',
-        'token': config.myqq['token'],
-        'params': {'c1': config.qq['robot_self_qq'], 'c2': '2', 'c3': qq_group_number, 'c5': msg}
-    })
-    logger.debug('post message: %s', data)
-    resp = requests.request(method='POST', url='http://localhost:10100/MyQQHTTPAPI', data=data,
-                            headers={'content-type': 'application/json'})
-    # resp = requests.post('http://localhost:10100/MyQQHTTPAPI', json={
+    # data = json.dumps({
     #     'function': 'Api_SendMsg',
     #     'token': config.myqq['token'],
     #     'params': {'c1': config.qq['robot_self_qq'], 'c2': '2', 'c3': qq_group_number, 'c5': msg}
     # })
+    # logger.debug('post message: %s', data)
+    # resp = requests.request(method='POST', url='http://localhost:10100/MyQQHTTPAPI', data=data,
+    #                         headers={'content-type': 'application/json'})
+    resp = requests.post('http://localhost:10100/MyQQHTTPAPI', json={
+        'function': 'Api_SendMsg',
+        'token': config.myqq['token'],
+        'params': {'c1': config.qq['robot_self_qq'], 'c2': '2', 'c3': qq_group_number, 'c5': msg}
+    })
+    logger.debug('send group message, return: %s', resp.content.decode('utf-8'))
     if resp.status_code != 200:
         logger.error('send group message failed, qq_group_number: %s', qq_group_number)
+
+
+def send_private_message(qq_group_number: str, qq: str, msg: str):
+    resp = requests.post('http://localhost:10100/MyQQHTTPAPI', json={
+        'function': 'Api_SendMsg',
+        'token': config.myqq['token'],
+        'params': {'c1': config.qq['robot_self_qq'], 'c2': '4', 'c3': qq_group_number, 'c4': qq, 'c5': msg}
+    })
+    logger.debug('send private message, return: %s', resp.content.decode('utf-8'))
+    if resp.status_code != 200:
+        logger.error('send private message failed, qq_group_number: %s', qq_group_number)

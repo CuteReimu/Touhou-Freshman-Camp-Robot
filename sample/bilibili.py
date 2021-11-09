@@ -13,7 +13,7 @@ from logger import logger
 
 def encrypt(public_key: bytes, data: bytes) -> bytes:
     pub_key = rsa.PublicKey.load_pkcs1_openssl_pem(public_key)
-    return base64.urlsafe_b64encode(rsa.encrypt(data, pub_key)).rstrip(b'=')
+    return base64.urlsafe_b64encode(rsa.encrypt(data, pub_key))
 
 
 def get_live_url() -> str:
@@ -22,7 +22,11 @@ def get_live_url() -> str:
 
 class Bilibili:
     def __init__(self):
-        self.cookies = {}
+        try:
+            with open('../cookies.txt', 'r') as f:
+                self.cookies = json.loads(f.read())
+        except IOError:
+            self.cookies = {}
 
     def login(self) -> None:
         if len(self.cookies) != 0:
@@ -41,25 +45,20 @@ class Bilibili:
         print('challenge:', challenge)
         print('请前往以下链接进行人机验证：')
         print('https://kuresaru.github.io/geetest-validator/')
-        print('请输入validate和seccode，中间用空格隔开：')
-        input_line = stdin.readline()
-        input_arr = input_line.split(' ', 2)
-        validate = input_arr[0].strip()
-        seccode = input_arr[1].strip()
-        print('你输入的validate是{0}，seccode是{1}'.format(validate, seccode))
+        print('验证后请输入validate：')
+        validate = stdin.readline().strip()
+        seccode = validate
         resp = requests.get('https://passport.bilibili.com/login?act=getkey')
         if resp.status_code != 200:
             logger.error('登录bilibili失败, status code: %d', resp.status_code)
             raise RuntimeError
         get_key_resp = json.loads(resp.content.decode('utf-8'))
-        logger.debug('get_key返回了：{0}'.format(get_key_resp))
         user_name = config.bilibili['username']
         pwd = config.bilibili['password']
         encrypt_pwd = encrypt(get_key_resp['key'].encode('utf-8'), (get_key_resp['hash'] + pwd).encode('utf-8'))
         post_format = 'captchaType=6&username={0}&password={1}&keep=true&key={2}&challenge={3}&validate={4}&seccode={5}'
         post_msg = post_format.format(user_name, encrypt_pwd.decode('utf-8'), key, challenge, validate, seccode)
-        logger.debug('登录请求是：%s', post_msg)
-        resp = requests.request(method='POST', headers={'content_type': 'application/x-www-form-urlencoded'},
+        resp = requests.request(method='POST', headers={'Content-Type': 'application/x-www-form-urlencoded'},
                                 url='https://passport.bilibili.com/web/login/v2', data=post_msg)
         if resp.status_code != 200:
             logger.error('登录bilibili失败, status code: %d', resp.status_code)
@@ -69,12 +68,18 @@ class Bilibili:
             raise RuntimeError
         logger.info('登录bilibili成功')
         self.cookies = requests.utils.dict_from_cookiejar(resp.cookies)
+        logger.debug('设置cookie成功：{0}'.format(self.cookies))
+        try:
+            with open('../cookies.txt', 'w') as f:
+                f.write(json.dumps(self.cookies))
+        except IOError:
+            logger.error('update cookies file failed')
 
     def get_live_status(self, qq_group_num: str) -> None:
         resp = requests.request(method='GET',
                                 url='https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=611240532',
                                 cookies=self.cookies,
-                                headers={'content_type': 'application/x-www-form-urlencoded'})
+                                headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
             logger.error("请求直播间信息失败，错误码：%s", resp.status_code)
             return
@@ -99,7 +104,7 @@ class Bilibili:
         post_msg = 'room_id={0}&platform=pc&area_v2={1}&csrf_token={2}&csrf={3}'.format(rid, area, bili_jct, bili_jct)
         resp = requests.request(method='POST', url='https://api.live.bilibili.com/room/v1/Room/startLive',
                                 cookies=self.cookies, data=post_msg,
-                                headers={'content_type': 'application/x-www-form-urlencoded'})
+                                headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
             logger.error('开启直播间失败，错误码：%d', resp.status_code)
             return
@@ -125,7 +130,7 @@ class Bilibili:
         post_msg = 'room_id={0}&csrf={1}'.format(rid, bili_jct)
         resp = requests.request(method='POST', url='https://api.live.bilibili.com/room/v1/Room/stopLive',
                                 cookies=self.cookies, data=post_msg,
-                                headers={'content_type': 'application/x-www-form-urlencoded'})
+                                headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
             logger.error('关闭直播间失败，错误码：%d', resp.status_code)
             return
@@ -144,10 +149,10 @@ class Bilibili:
         if bili_jct is None:
             return myqq.send_group_message(qq_group_num, 'B站登录过期')
         rid = config.bilibili['room_id']
-        post_msg = 'room_id={0}&title={1}&csrf={2}'.format(rid, title, bili_jct)
+        post_msg = 'room_id={0}&title={1}&csrf={2}'.format(rid, title, bili_jct).encode('utf-8')
         resp = requests.request(method='POST', url='https://api.live.bilibili.com/room/v1/Room/update',
                                 cookies=self.cookies, data=post_msg,
-                                headers={'content_type': 'application/x-www-form-urlencoded'})
+                                headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
             logger.error('修改直播间标题失败，错误码：%d', resp.status_code)
             return

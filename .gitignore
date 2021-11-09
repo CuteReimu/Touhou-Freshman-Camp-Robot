@@ -127,6 +127,7 @@ venv.bak/
 dmypy.json
 admin.txt
 whitelist.txt
+cookies.txt
 
 # Pyre type checker
 .pyre/

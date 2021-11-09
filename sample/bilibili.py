@@ -76,18 +76,19 @@ class Bilibili:
             logger.error('update cookies file failed')
 
     def get_live_status(self, qq_group_num: str) -> None:
+        rid = config.bilibili['room_id']
         resp = requests.request(method='GET',
-                                url='https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=611240532',
+                                url='https://api.live.bilibili.com/room/v1/Room/get_info?id={0}'.format(rid),
                                 cookies=self.cookies,
                                 headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
-            logger.error("请求直播间信息失败，错误码：%s", resp.status_code)
+            logger.error("请求直播间信息失败，错误码：%s，返回内容：%s", resp.status_code, resp.content.decode('utf-8'))
             return
         live_status_resp = json.loads(resp.content.decode('utf-8'))
         if live_status_resp['code'] != 0:
             logger.error('请求直播间状态失败，错误码：%d，错误信息：%s，', live_status_resp['code'], live_status_resp['message'])
             return
-        if live_status_resp['data']['liveStatus'] == 0:
+        if live_status_resp['data']['live_status'] == 0:
             myqq.send_group_message(qq_group_num, '直播间状态：未开播')
         else:
             msg = '直播间状态：开播\n直播标题：{0}\n人气：{1}\n直播间地址：{2}'.format(live_status_resp['data']['title'],

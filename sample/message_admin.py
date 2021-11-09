@@ -1,9 +1,9 @@
 import os
 
 import config
-import logger
 import message
 import myqq
+from logger import logger
 
 admin_cache: set[str] = set()
 

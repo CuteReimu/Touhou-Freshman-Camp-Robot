@@ -125,6 +125,8 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+admin.txt
+whitelist.txt
 
 # Pyre type checker
 .pyre/

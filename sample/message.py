@@ -1,4 +1,6 @@
 import abc
+
+import config
 import myqq
 
 
@@ -12,8 +14,41 @@ class IMessageDispatcher(object, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def execute(self, qq: str, *args: list[str]):
+    def execute(self, qq_group_number: str, qq: str, *args: str):
         pass
+
+
+messages: dict[str, IMessageDispatcher] = {}
+
+
+class GetTips(IMessageDispatcher):
+    def __init__(self):
+        super().__init__('查看帮助', '查看帮助')
+
+    def check_auth(self, qq: str) -> bool:
+        return True
+
+    def execute(self, qq_group_number: str, qq: str, *args: str):
+        msg = '你可以使用以下功能：'
+        for m in messages.values():
+            if m.check_auth(qq) and m.tips != '':
+                msg += '\n' + m.tips
+        myqq.send_group_message(qq_group_number, msg)
+
+
+class GetTips2(IMessageDispatcher):  # 处理艾特请求
+    def __init__(self):
+        super().__init__('[@' + config.qq['robot_self_qq'] + ']', '')
+
+    def check_auth(self, qq: str) -> bool:
+        return True
+
+    def execute(self, qq_group_number: str, qq: str, *args: str):
+        msg = '你可以使用以下功能：'
+        for m in messages.values():
+            if m.check_auth(qq) and m.tips != '':
+                msg += '\n' + m.tips
+        myqq.send_group_message(qq_group_number, msg)
 
 
 class Test(IMessageDispatcher):
@@ -23,16 +58,17 @@ class Test(IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return True
 
-    def execute(self, qq: str, *args: list[str]):
+    def execute(self, qq_group_number: str, qq: str, *args: str):
         myqq.send_group_message(qq, '返回测试')
 
 
-class Dispatcher:
-    def __init__(self):
-        self.messages: dict[str, IMessageDispatcher] = {}
-        self.__init_message(Test())
+def __init_message(msg: IMessageDispatcher):
+    if msg.name in messages:
+        raise KeyError
+    messages[msg.name] = msg
 
-    def __init_message(self, msg: IMessageDispatcher):
-        if msg.name in self.messages:
-            raise KeyError
-        self.messages[msg.name] = msg
+
+def init_message():
+    __init_message(Test())
+    __init_message(GetTips())
+    __init_message(GetTips2())

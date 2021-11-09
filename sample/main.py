@@ -1,5 +1,5 @@
-import myqq
 import logger
+import myqq
 
 if __name__ == '__main__':
     logger.init()

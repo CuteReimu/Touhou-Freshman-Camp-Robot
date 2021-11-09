@@ -23,7 +23,7 @@ qq = {
 
 logging_config = {
     'log_path': '../logs',
-    'console_level': logging.DEBUG,
+    'console_level': logging.INFO,
     'console_file_level': logging.INFO,
     'error_file_level': logging.WARN
 }

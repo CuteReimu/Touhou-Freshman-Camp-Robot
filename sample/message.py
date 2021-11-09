@@ -1,6 +1,9 @@
 import abc
 
 import config
+import message_admin
+import message_live
+import message_whitelist
 import myqq
 
 
@@ -14,7 +17,7 @@ class IMessageDispatcher(object, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         pass
 
 
@@ -28,7 +31,7 @@ class GetTips(IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return True
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         msg = '你可以使用以下功能：'
         for m in messages.values():
             if m.check_auth(qq) and m.tips != '':
@@ -43,7 +46,7 @@ class GetTips2(IMessageDispatcher):  # 处理艾特请求
     def check_auth(self, qq: str) -> bool:
         return True
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         msg = '你可以使用以下功能：'
         for m in messages.values():
             if m.check_auth(qq) and m.tips != '':
@@ -58,7 +61,7 @@ class Test(IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return True
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         myqq.send_group_message(qq, '返回测试')
 
 
@@ -72,3 +75,13 @@ def init_message():
     __init_message(Test())
     __init_message(GetTips())
     __init_message(GetTips2())
+    __init_message(message_admin.GetAdmin())
+    __init_message(message_admin.DelAdmin())
+    __init_message(message_admin.AddAdmin())
+    __init_message(message_whitelist.GetWhitelist())
+    __init_message(message_whitelist.DelWhitelist())
+    __init_message(message_whitelist.AddWhitelist())
+    __init_message(message_live.GetLiveState())
+    __init_message(message_live.StartLive())
+    __init_message(message_live.StopLive())
+    __init_message(message_live.ChangeLiveTitle())

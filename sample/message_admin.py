@@ -41,7 +41,7 @@ class DelAdmin(message.IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return qq == config.qq['super_admin_qq']
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 1:
             return
         target = args[0]
@@ -63,7 +63,7 @@ class AddAdmin(message.IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return qq == config.qq['super_admin_qq']
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 1:
             return
         target = args[0]
@@ -82,7 +82,7 @@ class GetAdmin(message.IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return True
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 0:
             return
         msg = "管理员列表："

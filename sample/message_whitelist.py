@@ -40,7 +40,7 @@ class DelWhitelist(message.IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 1:
             return
         target = args[0]
@@ -59,7 +59,7 @@ class AddWhitelist(message.IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 1:
             return
         target = args[0]
@@ -78,7 +78,7 @@ class GetWhitelist(message.IMessageDispatcher):
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
 
-    def execute(self, qq_group_number: str, qq: str, *args: str):
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 0:
             return
         msg = "白名单列表："

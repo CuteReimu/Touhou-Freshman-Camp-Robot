@@ -46,7 +46,7 @@ def deal_with_message() -> str:
 
 
 def send_group_message(qq_group_number: str, msg: str) -> None:
-    resp = requests.post('http://localhost:10100/MyQQHTTPAPI', json={
+    resp = requests.post(config.myqq['api_url'], json={
         'function': 'Api_SendMsg',
         'token': config.myqq['token'],
         'params': {'c1': config.qq['robot_self_qq'], 'c2': '2', 'c3': qq_group_number, 'c5': msg}
@@ -57,7 +57,7 @@ def send_group_message(qq_group_number: str, msg: str) -> None:
 
 
 def send_private_message(qq_group_number: str, qq: str, msg: str) -> None:
-    resp = requests.post('http://localhost:10100/MyQQHTTPAPI', json={
+    resp = requests.post(config.myqq['api_url'], json={
         'function': 'Api_SendMsg',
         'token': config.myqq['token'],
         'params': {'c1': config.qq['robot_self_qq'], 'c2': '4', 'c3': qq_group_number, 'c4': qq, 'c5': msg}

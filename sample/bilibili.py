@@ -13,7 +13,7 @@ from logger import logger
 
 def encrypt(public_key: bytes, data: bytes) -> bytes:
     pub_key = rsa.PublicKey.load_pkcs1_openssl_pem(public_key)
-    return base64.b64encode(rsa.encrypt(data, pub_key))
+    return base64.urlsafe_b64encode(rsa.encrypt(data, pub_key)).rstrip(b'=')
 
 
 def get_live_url() -> str:
@@ -52,11 +52,13 @@ class Bilibili:
             logger.error('登录bilibili失败, status code: %d', resp.status_code)
             raise RuntimeError
         get_key_resp = json.loads(resp.content.decode('utf-8'))
+        logger.debug('get_key返回了：{0}'.format(get_key_resp))
         user_name = config.bilibili['username']
         pwd = config.bilibili['password']
         encrypt_pwd = encrypt(get_key_resp['key'].encode('utf-8'), (get_key_resp['hash'] + pwd).encode('utf-8'))
         post_format = 'captchaType=6&username={0}&password={1}&keep=true&key={2}&challenge={3}&validate={4}&seccode={5}'
-        post_msg = post_format.format(user_name, encrypt_pwd, key, challenge, validate, seccode)
+        post_msg = post_format.format(user_name, encrypt_pwd.decode('utf-8'), key, challenge, validate, seccode)
+        logger.debug('登录请求是：%s', post_msg)
         resp = requests.request(method='POST', headers={'content_type': 'application/x-www-form-urlencoded'},
                                 url='https://passport.bilibili.com/web/login/v2', data=post_msg)
         if resp.status_code != 200:

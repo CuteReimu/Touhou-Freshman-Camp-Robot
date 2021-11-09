@@ -6,5 +6,5 @@ setup(
     author="CuteReimu",
     description="A QQ Chat robot of Touhou Freshman Camp",
     packages=find_packages(),
-    install_requires=['flask', 'gevent', 'requests']
+    install_requires=['flask', 'gevent', 'requests', 'rsa']
 )

@@ -13,7 +13,7 @@
 <ul>
 <li>QQ登录部分使用的是MyQQ框架的HTTPAPI，官网：
 https://www.myqqx.cn/</li>
-<li>Bilibili登录和开播部分是自己实现的，直接调用Bilibili的API接口：
+<li>Bilibili登录和开播部分是自己实现的（尚未提交），直接调用Bilibili的API接口：
 https://github.com/SocialSisterYi/bilibili-API-collect</li>
 <li>权限管理部分，在程序内部维护了一个Dict实现</li>
 </ul>

@@ -1,9 +1,9 @@
 import os
 
-import logger
 import message
 import message_admin
 import myqq
+from logger import logger
 
 whitelist_cache: set[str] = set()
 

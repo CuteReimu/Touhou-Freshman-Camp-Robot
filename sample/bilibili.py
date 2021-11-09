@@ -1,3 +1,4 @@
+import base64
 import json
 from sys import stdin
 
@@ -6,13 +7,13 @@ import requests.utils
 import rsa
 
 import config
-import logger
 import myqq
+from logger import logger
 
 
 def encrypt(public_key: bytes, data: bytes) -> bytes:
     pub_key = rsa.PublicKey.load_pkcs1_openssl_pem(public_key)
-    return rsa.encrypt(data, pub_key)
+    return base64.b64encode(rsa.encrypt(data, pub_key))
 
 
 def get_live_url() -> str:
@@ -29,7 +30,7 @@ class Bilibili:
         resp = requests.get('https://passport.bilibili.com/web/captcha/combine?plat=6')
         if resp.status_code != 200:
             logger.error('login failed, status code: %d', resp.status_code)
-            return
+            raise RuntimeError
         login_resp = json.loads(resp.content.decode('utf-8'))
         if login_resp['code'] != 0:
             logger.error('登录bilibili获取人机校验失败, code: %d', login_resp['code'])
@@ -43,12 +44,13 @@ class Bilibili:
         print('请输入validate和seccode，中间用空格隔开：')
         input_line = stdin.readline()
         input_arr = input_line.split(' ', 2)
-        validate = input_arr[0]
-        seccode = input_arr[1]
+        validate = input_arr[0].strip()
+        seccode = input_arr[1].strip()
+        print('你输入的validate是{0}，seccode是{1}'.format(validate, seccode))
         resp = requests.get('https://passport.bilibili.com/login?act=getkey')
         if resp.status_code != 200:
             logger.error('登录bilibili失败, status code: %d', resp.status_code)
-            return
+            raise RuntimeError
         get_key_resp = json.loads(resp.content.decode('utf-8'))
         user_name = config.bilibili['username']
         pwd = config.bilibili['password']
@@ -61,11 +63,8 @@ class Bilibili:
             logger.error('登录bilibili失败, status code: %d', resp.status_code)
         login_success_resp = json.loads(resp.content.decode('utf-8'))
         if login_success_resp['code'] != 0:
-            if login_success_resp['code'] != 2100:
-                logger.error('登录bilibili失败，错误码：%d', login_success_resp['code'])
-            else:
-                logger.error('登录bilibili失败，错误码：%d, 错误信息：%s', login_success_resp['code'], resp.content.decode('utf-8'))
-            return
+            logger.error('登录bilibili失败，错误码：%d, 错误信息：%s', login_success_resp['code'], login_success_resp['message'])
+            raise RuntimeError
         logger.info('登录bilibili成功')
         self.cookies = requests.utils.dict_from_cookiejar(resp.cookies)
 

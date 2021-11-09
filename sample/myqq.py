@@ -1,18 +1,21 @@
 import json
+import urllib.parse
 
 import requests
 from flask import Flask, request
 from gevent import pywsgi
 
 import config
-import logger
 import message
+import message_dispatcher
+from logger import logger
 
 app = Flask(__name__)
 
 
 # 启动MyQQ的HTTP回调接口
 def start_listen() -> None:
+    message_dispatcher.init_message()
     server = pywsgi.WSGIServer((config.myqq['callback_ip'], config.myqq['callback_port']), app, log=None)
     logger.info('port %d start listen', config.myqq['callback_port'])
     server.serve_forever()
@@ -21,16 +24,15 @@ def start_listen() -> None:
 # HTTP回调接口的定义
 @app.route('/', methods=['POST'])
 def deal_with_message() -> str:
-    bin_data = ''
-    for m in request.form:
-        bin_data = m
-    if bin_data == '':
-        logger.error("bad request")
+    bin_data = request.get_data()
+    try:
+        data = json.loads(bin_data)
+    except json.decoder.JSONDecodeError:
+        logger.error('json请求无法解析：%s', bin_data)
         return json.dumps({"status": 0, "msg": "bad request"})
-    data = json.loads(bin_data)
     from_qq = data.get('MQ_fromQQ')
     from_id = data.get('MQ_fromID')
-    msg = data.get('MQ_msg')
+    msg = urllib.parse.unquote(data.get('MQ_msg'))
     if from_qq is None or from_id is None or msg is None:
         logger.error("bad request")
         return json.dumps({"status": 0, "msg": "bad request"})
@@ -39,19 +41,11 @@ def deal_with_message() -> str:
         d = message.messages.get(arr[0])
         if d is not None and d.check_auth(from_qq):
             logger.info("%s说：%s", from_qq, msg)
-            d.execute(from_qq, *arr[1:])
+            d.execute(from_id, from_qq, *arr[1:])
     return json.dumps({"status": 1})
 
 
 def send_group_message(qq_group_number: str, msg: str) -> None:
-    # data = json.dumps({
-    #     'function': 'Api_SendMsg',
-    #     'token': config.myqq['token'],
-    #     'params': {'c1': config.qq['robot_self_qq'], 'c2': '2', 'c3': qq_group_number, 'c5': msg}
-    # })
-    # logger.debug('post message: %s', data)
-    # resp = requests.request(method='POST', url='http://localhost:10100/MyQQHTTPAPI', data=data,
-    #                         headers={'content-type': 'application/json'})
     resp = requests.post('http://localhost:10100/MyQQHTTPAPI', json={
         'function': 'Api_SendMsg',
         'token': config.myqq['token'],

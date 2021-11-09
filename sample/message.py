@@ -1,9 +1,6 @@
 import abc
 
 import config
-import message_admin
-import message_live
-import message_whitelist
 import myqq
 
 
@@ -62,26 +59,4 @@ class Test(IMessageDispatcher):
         return True
 
     def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
-        myqq.send_group_message(qq, '返回测试')
-
-
-def __init_message(msg: IMessageDispatcher):
-    if msg.name in messages:
-        raise KeyError
-    messages[msg.name] = msg
-
-
-def init_message():
-    __init_message(Test())
-    __init_message(GetTips())
-    __init_message(GetTips2())
-    __init_message(message_admin.GetAdmin())
-    __init_message(message_admin.DelAdmin())
-    __init_message(message_admin.AddAdmin())
-    __init_message(message_whitelist.GetWhitelist())
-    __init_message(message_whitelist.DelWhitelist())
-    __init_message(message_whitelist.AddWhitelist())
-    __init_message(message_live.GetLiveState())
-    __init_message(message_live.StartLive())
-    __init_message(message_live.StopLive())
-    __init_message(message_live.ChangeLiveTitle())
+        myqq.send_group_message(qq_group_number, '返回测试')

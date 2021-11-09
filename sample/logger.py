@@ -7,27 +7,27 @@ import config
 __l = logging.getLogger('robot')
 
 
-def debug(msg, *args, **kwargs):
+def debug(msg, *args, **kwargs) -> None:
     __l.debug(msg, *args, **kwargs)
 
 
-def info(msg, *args, **kwargs):
+def info(msg, *args, **kwargs) -> None:
     __l.info(msg, *args, **kwargs)
 
 
-def warning(msg, *args, **kwargs):
+def warning(msg, *args, **kwargs) -> None:
     __l.warning(msg, *args, **kwargs)
 
 
-def error(msg, *args, **kwargs):
+def error(msg, *args, **kwargs) -> None:
     __l.error(msg, *args, **kwargs)
 
 
-def critical(msg, *args, **kwargs):
+def critical(msg, *args, **kwargs) -> None:
     __l.critical(msg, *args, **kwargs)
 
 
-def init():
+def init() -> None:
     log_format = logging.Formatter('[%(levelname)s] %(asctime)s [%(filename)s:%(lineno)d]: %(message)s')
     log_path = config.logging_config['log_path']
     if not os.path.exists(log_path):

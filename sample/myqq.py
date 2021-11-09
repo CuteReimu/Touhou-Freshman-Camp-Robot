@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 
 # 启动MyQQ的HTTP回调接口
-def start_listen():
+def start_listen() -> None:
     server = pywsgi.WSGIServer((config.myqq['callback_ip'], config.myqq['callback_port']), app, log=None)
     logger.info('port %d start listen', config.myqq['callback_port'])
     server.serve_forever()
@@ -20,7 +20,7 @@ def start_listen():
 
 # HTTP回调接口的定义
 @app.route('/', methods=['POST'])
-def deal_with_message():
+def deal_with_message() -> str:
     bin_data = ''
     for m in request.form:
         bin_data = m
@@ -43,7 +43,7 @@ def deal_with_message():
     return json.dumps({"status": 1})
 
 
-def send_group_message(qq_group_number: str, msg: str):
+def send_group_message(qq_group_number: str, msg: str) -> None:
     # data = json.dumps({
     #     'function': 'Api_SendMsg',
     #     'token': config.myqq['token'],
@@ -62,7 +62,7 @@ def send_group_message(qq_group_number: str, msg: str):
         logger.error('send group message failed, qq_group_number: %s', qq_group_number)
 
 
-def send_private_message(qq_group_number: str, qq: str, msg: str):
+def send_private_message(qq_group_number: str, qq: str, msg: str) -> None:
     resp = requests.post('http://localhost:10100/MyQQHTTPAPI', json={
         'function': 'Api_SendMsg',
         'token': config.myqq['token'],

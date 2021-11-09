@@ -1,5 +1,5 @@
 # 东方Project沙包聚集地机器人
-<p>这是东方Project沙包聚集地（以下简称“红群”）的机器人，基于`Python3`编写<br/>
+<p>这是东方Project沙包聚集地（以下简称“红群”）的机器人，基于<b><i>Python3</i></b>编写<br/>
   <i>README待完善</i></p>
 <ul>
 <li>请勿滥用，本项目仅用于学习和测试！不可用于商业用途！</li>
@@ -13,7 +13,7 @@
 <ul>
 <li>QQ登录部分使用的是MyQQ框架的HTTPAPI，官网：
 https://www.myqqx.cn/</li>
-<li>Bilibili登录和开播部分是自己实现的（尚未提交），直接调用Bilibili的API接口：
+<li>Bilibili登录和开播部分是自己实现的，直接调用Bilibili的API接口：
 https://github.com/SocialSisterYi/bilibili-API-collect</li>
 <li>权限管理部分，在程序内部维护了一个Dict实现</li>
 </ul>

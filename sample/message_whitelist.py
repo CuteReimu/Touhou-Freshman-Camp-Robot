@@ -73,7 +73,7 @@ class AddWhitelist(message.IMessageDispatcher):
 
 class GetWhitelist(message.IMessageDispatcher):
     def __init__(self):
-        super().__init__('查看白名单', '查看白名单')
+        super().__init__('列出所有白名单', '列出所有白名单')
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
@@ -85,3 +85,19 @@ class GetWhitelist(message.IMessageDispatcher):
         for whitelist in whitelist_cache:
             msg += '\n' + whitelist
         myqq.send_group_message(qq_group_number, msg)
+
+
+class CheckWhitelist(message.IMessageDispatcher):
+    def __init__(self):
+        super().__init__('查看白名单', '查看白名单 对方QQ号')
+
+    def check_auth(self, qq: str) -> bool:
+        return qq in message_admin.admin_cache
+
+    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
+        if len(args) != 1:
+            return
+        if args[0] in whitelist_cache:
+            myqq.send_group_message(qq_group_number, args[0] + '是白名单')
+        else:
+            myqq.send_group_message(qq_group_number, args[0] + '不是白名单')

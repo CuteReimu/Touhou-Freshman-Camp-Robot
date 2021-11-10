@@ -6,8 +6,7 @@ from flask import Flask, request
 from gevent import pywsgi
 
 import config
-import message
-import message_dispatcher
+import chat_pipeline_manager
 from logger import logger
 
 app = Flask(__name__)
@@ -15,7 +14,7 @@ app = Flask(__name__)
 
 # 启动MyQQ的HTTP回调接口
 def start_listen() -> None:
-    message_dispatcher.init_message()
+    chat_pipeline_manager.init_chat_pipeline()
     server = pywsgi.WSGIServer((config.myqq['callback_ip'], config.myqq['callback_port']), app, log=None)
     logger.info('port %d start listen', config.myqq['callback_port'])
     server.serve_forever()
@@ -37,11 +36,7 @@ def deal_with_message() -> str:
         logger.error("bad request")
         return json.dumps({"status": 0, "msg": "bad request"})
     if from_qq != config.qq['robot_self_qq'] and from_id in config.qq['available_qq_group']:
-        arr = msg.split('+')  # MyQQ会自动把空格转为加号，所以这里要用+分隔
-        d = message.messages.get(arr[0])
-        if d is not None and d.check_auth(from_qq):
-            logger.info("%s说：%s", from_qq, msg)
-            d.execute(from_id, from_qq, *arr[1:])
+        chat_pipeline_manager.deal_with_msg(from_id, from_qq, msg)
     return json.dumps({"status": 1})
 
 

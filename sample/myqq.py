@@ -5,8 +5,8 @@ import requests
 from flask import Flask, request
 from gevent import pywsgi
 
-import config
 import chat_pipeline_manager
+import config
 from logger import logger
 
 app = Flask(__name__)
@@ -60,3 +60,22 @@ def send_private_message(qq_group_number: str, qq: str, msg: str) -> None:
     logger.debug('send private message, return: %s', resp.content.decode('utf-8'))
     if resp.status_code != 200:
         logger.error('send private message failed, qq_group_number: %s', qq_group_number)
+
+
+def upload_pic(qq_group_number: str, pic_url: str) -> str:
+    resp = requests.post(config.myqq['api_url'], json={
+        'function': 'Api_UpLoadPic',
+        'token': config.myqq['token'],
+        'params': {'c1': config.qq['robot_self_qq'], 'c2': '2', 'c3': qq_group_number, 'c4': pic_url}
+    })
+    ret_str = resp.content.decode('utf-8')
+    logger.debug('upload pic, return: %s', ret_str)
+    if resp.status_code != 200:
+        logger.error('upload pic failed, qq_group_number: %s', qq_group_number)
+        return ''
+    ret = json.loads(ret_str)
+    if ret['code'] != 200:
+        logger.error('upload pic failed, qq_group_number: %s, error code: %d, error msg: %s', qq_group_number,
+                     ret['code'], ret['msg'])
+        return ''
+    return ret['data']['ret']

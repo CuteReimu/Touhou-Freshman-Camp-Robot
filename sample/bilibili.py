@@ -165,3 +165,25 @@ class Bilibili:
             myqq.send_group_message(qq_group_num, '修改直播间标题失败，请联系管理员')
         else:
             myqq.send_group_message(qq_group_num, '直播间标题已修改为：' + title)
+
+    def get_video_info(self, aid: int = 0, bid: str = None):
+        if aid != 0:
+            url = 'https://api.bilibili.com/x/web-interface/view?aid={0}'.format(aid)
+        elif bid is not None and bid != '':
+            url = 'https://api.bilibili.com/x/web-interface/view?bvid=' + bid
+        else:
+            logger.error('aid和bvid至少要填一项')
+            return None
+        resp = requests.request(method='GET', url=url, cookies=self.cookies)
+        if resp.status_code != 200:
+            logger.info('获取视频详细信息失败，错误码：%d', resp.status_code)
+            return None
+        video_info = json.loads(resp.content.decode('utf-8'))
+        if video_info['code'] != 0:
+            logger.info('获取视频详细信息失败，错误码：%d，错误信息1：%s', video_info['code'], video_info['message'])
+            return None
+        else:
+            return video_info['data']
+
+
+bili = Bilibili()

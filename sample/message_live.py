@@ -1,5 +1,5 @@
 import message
-import message_admin
+import message_whitelist
 from bilibili import Bilibili
 
 bili = Bilibili()
@@ -23,7 +23,7 @@ class StartLive(message.IMessageDispatcher):
         super().__init__('开始直播', '开始直播')
 
     def check_auth(self, qq: str) -> bool:
-        return qq in message_admin.admin_cache
+        return qq in message_whitelist.whitelist_cache
 
     def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 0:
@@ -36,7 +36,7 @@ class StopLive(message.IMessageDispatcher):
         super().__init__('关闭直播', '关闭直播')
 
     def check_auth(self, qq: str) -> bool:
-        return qq in message_admin.admin_cache
+        return qq in message_whitelist.whitelist_cache
 
     def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 0:
@@ -49,7 +49,7 @@ class ChangeLiveTitle(message.IMessageDispatcher):
         super().__init__('修改直播标题', '修改直播标题 新标题')
 
     def check_auth(self, qq: str) -> bool:
-        return qq in message_admin.admin_cache
+        return qq in message_whitelist.whitelist_cache
 
     def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) < 1 or len(args) > 10:

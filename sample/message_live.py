@@ -1,5 +1,6 @@
 import message
 import message_whitelist
+import myqq
 from bilibili import Bilibili
 
 bili = Bilibili()
@@ -52,7 +53,10 @@ class ChangeLiveTitle(message.IMessageDispatcher):
         return qq in message_whitelist.whitelist_cache
 
     def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
-        if len(args) < 1 or len(args) > 10:
+        if len(args) < 1:
+            myqq.send_group_message(qq_group_number, '指令格式如下：\n修改直播标题 新标题')
+            return
+        if len(args) > 10:
             return
         title = ''
         for s in args:

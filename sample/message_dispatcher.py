@@ -11,7 +11,6 @@ def __init_message(msg: message.IMessageDispatcher):
 
 
 def init_message():
-    message_live.bili.login()
     message_admin.on_init()
     message_whitelist.on_init()
     # __init_message(message.Test())

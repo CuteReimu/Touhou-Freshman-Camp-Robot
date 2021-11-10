@@ -1,9 +1,7 @@
 import message
 import message_whitelist
 import myqq
-from bilibili import Bilibili
-
-bili = Bilibili()
+from bilibili import bili
 
 
 class GetLiveState(message.IMessageDispatcher):

@@ -23,6 +23,7 @@ def init_message():
     __init_message(message_whitelist.GetWhitelist())
     __init_message(message_whitelist.DelWhitelist())
     __init_message(message_whitelist.AddWhitelist())
+    __init_message(message_whitelist.CheckWhitelist())
     __init_message(message_live.GetLiveState())
     __init_message(message_live.StartLive())
     __init_message(message_live.StopLive())

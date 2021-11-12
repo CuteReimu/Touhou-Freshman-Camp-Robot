@@ -7,9 +7,10 @@ from readerwriterlock import rwlock
 import config
 import message
 import message_whitelist
-import myqq
+import mirai_bot
 from logger import logger
 from schedule import schedule
+from mirai_bot_chain import plain
 
 schedule_id = 0
 
@@ -79,7 +80,7 @@ def __action():
                     pop_idx.append(delta_idx)
             if pop_idx:
                 for qq_group_number in config.schedule['qq_group']:
-                    myqq.send_group_message(qq_group_number, '温馨提醒：\n{0} 将于{1}开始'.format(msg, date_obj))
+                    mirai_bot.send_group_message(qq_group_number, [plain('温馨提醒：\n{0} 将于{1}开始'.format(msg, date_obj))])
                 pop_idx.reverse()
                 for idx in pop_idx:
                     deltas.pop(idx)
@@ -119,17 +120,17 @@ class AddSchedule(message.IMessageDispatcher):
     def __init__(self):
         super().__init__('增加预约', '增加预约 211225 190000 预约文字\n                 年月日 时分秒')
 
-    def check_auth(self, qq: str) -> bool:
+    def check_auth(self, qq: int) -> bool:
         return qq in message_whitelist.whitelist_cache
 
-    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
+    def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
         if len(args) < 3:
-            myqq.send_group_message(qq_group_number, '指令格式如下：\n增加预约 211225 190000 预约文字\n                 年月日 时分秒')
+            mirai_bot.send_group_message(qq_group_number, [plain('指令格式如下：\n增加预约 211225 190000 预约文字\n                 年月日 时分秒')])
             return
         try:
             date_obj = datetime.strptime(args[0] + args[1], '%y%m%d%H%M%S')
         except ValueError:
-            myqq.send_group_message(qq_group_number, '日期或时间格式错误')
+            mirai_bot.send_group_message(qq_group_number, [plain('日期或时间格式错误')])
             return
         if len(args) > 12:
             return
@@ -147,19 +148,19 @@ class AddSchedule(message.IMessageDispatcher):
             update_schedule_file()
         finally:
             write_lock.release()
-        myqq.send_group_message(qq_group_number, '增加预约成功')
+        mirai_bot.send_group_message(qq_group_number, [plain('增加预约成功')])
 
 
 class DelSchedule(message.IMessageDispatcher):
     def __init__(self):
         super().__init__('删除预约', '删除预约 序号（请先用“预约列表”查询序号）')
 
-    def check_auth(self, qq: str) -> bool:
+    def check_auth(self, qq: int) -> bool:
         return qq in message_whitelist.whitelist_cache
 
-    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
+    def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
         if len(args) != 1:
-            myqq.send_group_message(qq_group_number, '指令格式如下：\n删除预约 序号')
+            mirai_bot.send_group_message(qq_group_number, [plain('指令格式如下：\n删除预约 序号')])
             return
         try:
             del_idx = int(args[0])
@@ -178,19 +179,19 @@ class DelSchedule(message.IMessageDispatcher):
         finally:
             write_lock.release()
         if succeed:
-            myqq.send_group_message(qq_group_number, '删除预约成功')
+            mirai_bot.send_group_message(qq_group_number, [plain('删除预约成功')])
         else:
-            myqq.send_group_message(qq_group_number, '找不到这条预约，请再次确认序号是否正确')
+            mirai_bot.send_group_message(qq_group_number, [plain('找不到这条预约，请再次确认序号是否正确')])
 
 
 class ListAllSchedule(message.IMessageDispatcher):
     def __init__(self):
         super().__init__('预约列表', '预约列表 想要展示的行数（默认5行）')
 
-    def check_auth(self, qq: str) -> bool:
+    def check_auth(self, qq: int) -> bool:
         return True
 
-    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
+    def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
         if len(args) == 0:
             count = 5
         elif len(args) == 1:
@@ -199,7 +200,7 @@ class ListAllSchedule(message.IMessageDispatcher):
             except ValueError:
                 return
         else:
-            myqq.send_group_message(qq_group_number, '指令格式如下：\n预约列表 想要展示的行数')
+            mirai_bot.send_group_message(qq_group_number, [plain('指令格式如下：\n预约列表 想要展示的行数')])
             return
         ret = ''
         i = 0
@@ -215,4 +216,6 @@ class ListAllSchedule(message.IMessageDispatcher):
                 i += 1
         finally:
             read_lock.release()
-        myqq.send_group_message(qq_group_number, ret)
+        if ret == '':
+            ret = '暂无预约'
+        mirai_bot.send_group_message(qq_group_number, [plain(ret)])

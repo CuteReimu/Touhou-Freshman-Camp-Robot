@@ -1,7 +1,8 @@
 import abc
 
 import config
-import myqq
+import mirai_bot
+from mirai_bot_chain import plain
 
 
 class IMessageDispatcher(object, metaclass=abc.ABCMeta):
@@ -13,12 +14,12 @@ class IMessageDispatcher(object, metaclass=abc.ABCMeta):
         self.tips = tips
 
     @abc.abstractmethod
-    def check_auth(self, qq: str) -> bool:
+    def check_auth(self, qq: int) -> bool:
         """如果他有权限执行这个指令，则返回True，否则返回False"""
         pass
 
     @abc.abstractmethod
-    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
+    def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
         """args参数是一个str的list，也就是除开指令名（第一个空格前的部分）以外，剩下的所有内容按照空格进行拆分"""
         pass
 
@@ -30,38 +31,38 @@ class GetTips(IMessageDispatcher):
     def __init__(self):
         super().__init__('查看帮助', '查看帮助')
 
-    def check_auth(self, qq: str) -> bool:
+    def check_auth(self, qq: int) -> bool:
         return True
 
-    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
+    def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
         msg = '你可以使用以下功能：'
         for m in messages.values():
             if m.check_auth(qq) and m.tips != '':
                 msg += '\n' + m.tips
-        myqq.send_group_message(qq_group_number, msg)
+        mirai_bot.send_group_message(qq_group_number, [plain(msg)])
 
 
 class GetTips2(IMessageDispatcher):  # 处理艾特请求
     def __init__(self):
-        super().__init__('[@' + config.qq['robot_self_qq'] + ']', '')
+        super().__init__('[@' + str(config.qq['robot_self_qq']) + ']', '')
 
-    def check_auth(self, qq: str) -> bool:
+    def check_auth(self, qq: int) -> bool:
         return True
 
-    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
+    def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
         msg = '你可以使用以下功能：'
         for m in messages.values():
             if m.check_auth(qq) and m.tips != '':
                 msg += '\n' + m.tips
-        myqq.send_group_message(qq_group_number, msg)
+        mirai_bot.send_group_message(qq_group_number, [plain(msg)])
 
 
 class Test(IMessageDispatcher):
     def __init__(self):
         super().__init__('测试', '测试')
 
-    def check_auth(self, qq: str) -> bool:
+    def check_auth(self, qq: int) -> bool:
         return True
 
-    def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
-        myqq.send_group_message(qq_group_number, '返回测试')
+    def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
+        mirai_bot.send_group_message(qq_group_number, [plain('返回测试')])

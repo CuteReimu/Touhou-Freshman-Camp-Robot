@@ -1,7 +1,7 @@
 import logging
 from datetime import timedelta
 
-myqq = {
+mirai_bot = {
     'token': 'dsageqrewghbtwhwertt',
     'api_url': 'http://localhost:12346/MyQQHTTPAPI',
     'callback_ip': '127.0.0.1',
@@ -13,7 +13,6 @@ mirai = {
     'api_url': 'http://localhost:8080',
     'callback_ip': '127.0.0.1',
     'callback_port': 9999,
-    'session': ''
 }
 
 bilibili = {
@@ -25,9 +24,9 @@ bilibili = {
 }
 
 qq = {
-    'robot_self_qq': '12345678',  # 机器人自己的QQ号
-    'super_admin_qq': '12345678',  # 超管的QQ号
-    'available_qq_group': ['12345678', '23456789']  # 接收消息的QQ群
+    'robot_self_qq': 12345678,  # 机器人自己的QQ号
+    'super_admin_qq': 12345678,  # 超管的QQ号
+    'available_qq_group': [12345678, 23456789]  # 接收消息的QQ群
 }
 
 logging_config = {
@@ -38,6 +37,6 @@ logging_config = {
 }
 
 schedule = {
-    'qq_group': ['12345678'],  # 定时事件的QQ群
+    'qq_group': [12345678],  # 定时事件的QQ群
     'before': [timedelta(hours=3), timedelta(hours=6)]  # 提前提醒的时间
 }

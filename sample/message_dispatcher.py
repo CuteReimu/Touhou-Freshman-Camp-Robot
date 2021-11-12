@@ -15,7 +15,7 @@ def init_message():
     message_admin.on_init()
     message_whitelist.on_init()
     message_schedule.on_init()
-    # __init_message(message.Test())
+    __init_message(message.Test())
     __init_message(message.GetTips())
     __init_message(message.GetTips2())
     __init_message(message_admin.GetAdmin())

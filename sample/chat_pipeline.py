@@ -14,7 +14,7 @@ class IChatPipeline(object, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def execute(self, qq_group_number: str, qq: str, msg: str) -> str:
+    def execute(self, qq_group_number: int, qq: int, msg_chain: list) -> str:
         """每次收到QQ消息时会执行这个函数。
         这个函数的返回值会传给下一个消息处理器，作为msg参数传入。
         如果你不打算影响后续的消息处理器，在执行完自己的代码后，直接return msg即可。
@@ -29,10 +29,12 @@ class MessagePipeline(IChatPipeline):
     def on_init(self):
         message_dispatcher.init_message()
 
-    def execute(self, qq_group_number: str, qq: str, msg: str) -> str:
-        arr = msg.split('+')  # MyQQ会自动把空格转为加号，所以这里要用+分隔
-        d = message.messages.get(arr[0])
-        if d is not None and d.check_auth(qq) and '[pic={' not in msg:
-            logger.info("%s说：%s", qq, msg)
-            d.execute(qq_group_number, qq, *arr[1:])
-        return msg
+    def execute(self, qq_group_number: int, qq: int, msg_chain: list) -> str:
+        if len(msg_chain) == 2 and msg_chain[1]['type'] == 'Plain':
+            msg = msg_chain[1]['text']
+            arr = msg.split(' ')
+            d = message.messages.get(arr[0])
+            if d is not None and d.check_auth(qq):
+                logger.info("%s说：%s", qq, msg)
+                d.execute(qq_group_number, qq, *arr[1:])
+            return msg

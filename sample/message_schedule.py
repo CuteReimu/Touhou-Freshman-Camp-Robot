@@ -195,7 +195,7 @@ class ListAllSchedule(message.IMessageDispatcher):
             count = 5
         elif len(args) == 1:
             try:
-                count = int(args[1])
+                count = int(args[0])
             except ValueError:
                 return
         else:

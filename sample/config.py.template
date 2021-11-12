@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 myqq = {
     'token': 'dsageqrewghbtwhwertt',
@@ -26,11 +27,6 @@ logging_config = {
     'console_level': logging.INFO,
     'console_file_level': logging.INFO,
     'error_file_level': logging.WARN
-}
-
-schedule = {
-    'qq_group': ['12345678'],  # 定时事件的QQ群
-    'before_second': [3, 6]  # 提前提醒的小时数
 }
 
 schedule = {

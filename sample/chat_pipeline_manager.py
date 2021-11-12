@@ -5,6 +5,8 @@ import chat_pipeline_bilibili_video
 def deal_with_msg(qq_group_number: str, qq: str, msg: str):
     for pipeline in chat_pipeline.pipelines:
         msg = pipeline.execute(qq_group_number, qq, msg)
+        if msg == '':
+            break
 
 
 def __init_chat_pipeline(pipeline: chat_pipeline.IChatPipeline):

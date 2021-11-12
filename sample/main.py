@@ -1,8 +1,9 @@
 import logger
-import myqq
+import mirai_bot
 from bilibili import bili
 
 if __name__ == '__main__':
     logger.init()
     bili.login()
-    myqq.start_listen()
+    # mirai_bot.start_listen()
+    mirai_bot.start_listen()

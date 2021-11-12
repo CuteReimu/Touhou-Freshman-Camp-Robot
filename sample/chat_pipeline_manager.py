@@ -2,9 +2,9 @@ import chat_pipeline
 import chat_pipeline_bilibili_video
 
 
-def deal_with_msg(qq_group_number: str, qq: str, msg: str):
+def deal_with_msg(qq_group_number: int, qq: int, msg_chain: list):
     for pipeline in chat_pipeline.pipelines:
-        msg = pipeline.execute(qq_group_number, qq, msg)
+        msg = pipeline.execute(qq_group_number, qq, msg_chain)
         if msg == '':
             break
 

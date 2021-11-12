@@ -2,6 +2,8 @@ import os
 import time
 from datetime import datetime, timedelta
 
+from readerwriterlock import rwlock
+
 import config
 import message
 import message_whitelist
@@ -9,9 +11,14 @@ import myqq
 from logger import logger
 from schedule import schedule
 
+schedule_id = 0
+
 
 class ScheduleData:
     def __init__(self, date_obj: datetime, tips: str, deltas: list[timedelta]):
+        global schedule_id
+        schedule_id += 1
+        self.id = schedule_id
         self.date_obj = date_obj
         self.tips = tips
         self.deltas = deltas
@@ -21,7 +28,23 @@ class ScheduleData:
 
 
 schedule_cache: list[ScheduleData] = []
+lock = rwlock.RWLockWrite()
 time_format = '%Y/%m/%d|%H-%M-%S'
+
+
+def update_schedule_file():
+    is_first = True
+    try:
+        with open('../schedule.txt', 'w') as f:
+            for data in schedule_cache:
+                date_obj = data.date_obj
+                if is_first:
+                    f.write('{0} {1}'.format(date_obj.strftime(time_format), data.tips))
+                    is_first = False
+                else:
+                    f.write('\n' + '{0} {1}'.format(date_obj.strftime(time_format), data.tips))
+    except IOError:
+        logger.error('update schedule file failed')
 
 
 def __custom_sorted_fun(data1: tuple[datetime, str, list[timedelta]],
@@ -36,7 +59,9 @@ def __custom_sorted_fun(data1: tuple[datetime, str, list[timedelta]],
 __custom_sorted = __custom_sorted_fun
 
 
-def __action():  # TODO 此处有明显多线程BUG
+def __action():
+    write_lock = lock.gen_wlock()
+    write_lock.acquire()
     try:
         now = datetime.fromtimestamp(time.time())
         pop_id = []
@@ -62,9 +87,11 @@ def __action():  # TODO 此处有明显多线程BUG
             pop_id.reverse()
             for data_id in pop_id:
                 schedule_cache.pop(data_id)
+            update_schedule_file()
     except Exception as e:
         logger.error(str(e))
     finally:
+        write_lock.release()
         schedule.add(60, __action)
 
 
@@ -83,23 +110,9 @@ def on_init():
                     date_obj = datetime.strptime(arr[0], time_format)
                     schedule_cache.append(ScheduleData(date_obj, arr[1], delta.copy()))
                 line = f.readline()
+            schedule_cache.sort()
     schedule.add(60, __action)
     schedule.run()
-
-
-def update_schedule_file():
-    is_first = True
-    try:
-        with open('../schedule.txt', 'w') as f:
-            for data in schedule_cache:
-                date_obj = data.date_obj
-                if is_first:
-                    f.write('{0} {1}'.format(date_obj.strftime(time_format), data.tips))
-                    is_first = False
-                else:
-                    f.write('\n' + '{0} {1}'.format(date_obj.strftime(time_format), data.tips))
-    except IOError:
-        logger.error('update schedule file failed')
 
 
 class AddSchedule(message.IMessageDispatcher):
@@ -126,9 +139,14 @@ class AddSchedule(message.IMessageDispatcher):
                 msg += ' '
             msg += args[i]
         global __custom_sorted
-        schedule_cache.append(ScheduleData(date_obj, msg, config.schedule['before'].copy()))
-        schedule_cache.sort()
-        update_schedule_file()
+        write_lock = lock.gen_wlock()
+        write_lock.acquire()
+        try:
+            schedule_cache.append(ScheduleData(date_obj, msg, config.schedule['before'].copy()))
+            schedule_cache.sort()
+            update_schedule_file()
+        finally:
+            write_lock.release()
         myqq.send_group_message(qq_group_number, '增加预约成功')
 
 
@@ -144,17 +162,25 @@ class DelSchedule(message.IMessageDispatcher):
             myqq.send_group_message(qq_group_number, '指令格式如下：\n删除预约 序号')
             return
         try:
-            idx = int(args[0]) - 1
-            if idx < 0:
-                raise IndexError
-            schedule_cache.pop(idx)
-        except IndexError:
-            myqq.send_group_message(qq_group_number, '找不到这条预约，请再次确认序号是否正确')
-            return
+            del_idx = int(args[0])
         except ValueError:
             return
-        update_schedule_file()
-        myqq.send_group_message(qq_group_number, '删除预约成功')
+        succeed = False
+        write_lock = lock.gen_wlock()
+        write_lock.acquire()
+        try:
+            for idx in range(len(schedule_cache)):
+                if schedule_cache[idx].id == del_idx:
+                    schedule_cache.pop(idx)
+                    update_schedule_file()
+                    succeed = True
+                    break
+        finally:
+            write_lock.release()
+        if succeed:
+            myqq.send_group_message(qq_group_number, '删除预约成功')
+        else:
+            myqq.send_group_message(qq_group_number, '找不到这条预约，请再次确认序号是否正确')
 
 
 class ListAllSchedule(message.IMessageDispatcher):
@@ -177,12 +203,16 @@ class ListAllSchedule(message.IMessageDispatcher):
             return
         ret = ''
         i = 0
-        for idx in range(len(schedule_cache)):
-            if i >= count:
-                break
-            data = schedule_cache[idx]
-            if ret != '':
-                ret += '\n'
-            ret += '{0}  {1}  {2}'.format(idx + 1, data.date_obj, data.tips)
-            i += 1
+        read_lock = lock.gen_rlock()
+        read_lock.acquire()
+        try:
+            for data in schedule_cache:
+                if i >= count:
+                    break
+                if ret != '':
+                    ret += '\n'
+                ret += '{0}  {1}  {2}'.format(data.id, data.date_obj, data.tips)
+                i += 1
+        finally:
+            read_lock.release()
         myqq.send_group_message(qq_group_number, ret)

@@ -2,6 +2,7 @@ import abc
 
 import message
 import message_dispatcher
+import config
 from logger import logger
 
 
@@ -30,6 +31,8 @@ class MessagePipeline(IChatPipeline):
         message_dispatcher.init_message()
 
     def execute(self, qq_group_number: int, qq: int, msg_chain: list) -> str:
+        if len(msg_chain) == 2 and msg_chain[1]['type'] == 'At' and msg_chain[1]['target'] == config.qq['robot_self_qq']:
+            msg_chain[1] = {'type': 'Plain', 'text': '查看帮助'}
         if len(msg_chain) == 2 and msg_chain[1]['type'] == 'Plain':
             msg = msg_chain[1]['text']
             arr = msg.split(' ')

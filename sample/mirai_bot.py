@@ -115,7 +115,6 @@ def send_group_message(group: int, msg_chain: list) -> None:
     resp = requests.post(
         url=config.mirai['api_url'] + '/sendGroupMessage',
         json={
-            'sessionKey': config.mirai['session'],
             'target': group,
             'messageChain': msg_chain
         }
@@ -132,7 +131,6 @@ def send_temp_message(qq: int, group: int, msg_chain: list) -> None:
     resp = requests.post(
         url=config.mirai['api_url'] + '/sendTempMessage',
         json={
-            'sessionKey': config.mirai['session'],
             'qq': qq,
             'group': group,
             'messageChain': msg_chain
@@ -151,7 +149,6 @@ def send_friend_message(qq: int, msg_chain: list) -> None:
     resp = requests.post(
         url=config.mirai['api_url'] + '/sendFriendMessage',
         json={
-            'sessionKey': config.mirai['session'],
             'qq': qq,
             'messageChain': msg_chain
         }

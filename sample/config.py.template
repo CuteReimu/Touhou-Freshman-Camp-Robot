@@ -8,6 +8,14 @@ myqq = {
     'callback_port': 12345
 }
 
+mirai = {
+    'verifyKey': 'YoutVerifyKey',
+    'api_url': 'http://localhost:8080',
+    'callback_ip': '127.0.0.1',
+    'callback_port': 9999,
+    'session': ''
+}
+
 bilibili = {
     'username': '13888888888',  # 用户名
     'password': '12345678',  # 密码

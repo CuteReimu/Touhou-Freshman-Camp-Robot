@@ -42,21 +42,6 @@ class GetTips(IMessageDispatcher):
         mirai_bot.send_group_message(qq_group_number, [plain(msg)])
 
 
-class GetTips2(IMessageDispatcher):  # 处理艾特请求
-    def __init__(self):
-        super().__init__('[@' + str(config.qq['robot_self_qq']) + ']', '')
-
-    def check_auth(self, qq: int) -> bool:
-        return True
-
-    def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
-        msg = '你可以使用以下功能：'
-        for m in messages.values():
-            if m.check_auth(qq) and m.tips != '':
-                msg += '\n' + m.tips
-        mirai_bot.send_group_message(qq_group_number, [plain(msg)])
-
-
 class Test(IMessageDispatcher):
     def __init__(self):
         super().__init__('测试', '测试')

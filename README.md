@@ -9,7 +9,7 @@
   
 这是东方Project沙包聚集地（以下简称“红群”）的机器人，基于`Python3`编写
 
-## 简介
+## 声明
 * **本项目采用`AGPLv3`协议开源，任何间接接触本项目的软件也要求使用`AGPLv3`协议开源**
 * **不鼓励，不支持一切商业用途**
 * **由于使用本项目提供的接口、文档等造成的不良影响和后果与本人和红群无关**
@@ -18,7 +18,7 @@
 
 ## 架构
 整个框架包含以下三个部分：
-* QQ登录部分使用的是MyQQ框架的HTTPAPI，官网：https://www.myqqx.cn/
+* QQ登录部分使用的是mirai框架的http-api中的http adapter和webhook
 * Bilibili登录和开播部分是自己实现的，直接调用Bilibili的API接口：https://github.com/SocialSisterYi/bilibili-API-collect
 * 权限管理部分，在程序内部维护了一个`dict`实现
 
@@ -31,9 +31,14 @@
 ```bash
 python setup.py install
 ```
-2. 下载并安装MyQQ，登录机器人QQ号
-3. 将`config.py.template`重命名为`config.py`，并进行配置
-4. 运行main.py
+2. 下载并安装mirai，其中http-api要手动安装最新版的（脚本不会安装最新版）
+3. 在mirai下面配置
+4. 将`config.py.template`重命名为`config.py`，并进行配置
+5. 运行main.py
 
-## 后续优化
-考虑到MyQQ框架并不算很稳定，期待后续能使用更加稳定的框架替换，例如Mirai等
+## 主要开发人员
+| 功能 | 人员 |
+| ---- | ---- |
+| 框架搭建 | 奇葩の灵梦
+| mirai接入 | 東方妖ゝ夢
+| B站API接入 | 奇葩の灵梦

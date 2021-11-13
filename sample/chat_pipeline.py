@@ -35,7 +35,7 @@ class MessagePipeline(IChatPipeline):
     def __is_at_message(msg_chain: list) -> True:
         if len(msg_chain) < 2:
             return False
-        contains_at = True
+        contains_at = False
         for idx in range(1, len(msg_chain)):
             if msg_chain[idx]['type'] == 'At':
                 if msg_chain[idx]['target'] == config.qq['robot_self_qq']:

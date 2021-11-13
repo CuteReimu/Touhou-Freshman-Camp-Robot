@@ -9,6 +9,7 @@ import rsa
 import config
 import mirai_bot
 from logger import logger
+from mirai_bot_chain import plain
 
 
 def encrypt(public_key: bytes, data: bytes) -> bytes:
@@ -75,7 +76,7 @@ class Bilibili:
         except IOError:
             logger.error('update cookies file failed')
 
-    def get_live_status(self, qq_group_num: str) -> None:
+    def get_live_status(self, qq_group_num: int) -> None:
         rid = config.bilibili['room_id']
         resp = requests.request(method='GET',
                                 url='https://api.live.bilibili.com/room/v1/Room/get_info?id={0}'.format(rid),
@@ -89,16 +90,16 @@ class Bilibili:
             logger.error('请求直播间状态失败，错误码：%d，错误信息：%s，', live_status_resp['code'], live_status_resp['message'])
             return
         if live_status_resp['data']['live_status'] == 0:
-            mirai_bot.send_group_message(qq_group_num, '直播间状态：未开播')
+            mirai_bot.send_group_message(qq_group_num, [plain('直播间状态：未开播')])
         else:
             msg = '直播间状态：开播\n直播标题：{0}\n人气：{1}\n直播间地址：{2}'.format(live_status_resp['data']['title'],
                                                                  live_status_resp['data']['online'], get_live_url())
-            mirai_bot.send_group_message(qq_group_num, msg)
+            mirai_bot.send_group_message(qq_group_num, [plain(msg)])
 
-    def start_live(self, qq_group_num: str, qq: int) -> None:
+    def start_live(self, qq_group_num: int, qq: int) -> None:
         bili_jct = self.cookies.get('bili_jct')
         if bili_jct is None:
-            mirai_bot.send_group_message(qq_group_num, 'B站登录过期')
+            mirai_bot.send_group_message(qq_group_num, [plain('B站登录过期')])
             return
         rid = config.bilibili['room_id']
         area = config.bilibili['area_v2']
@@ -115,18 +116,18 @@ class Bilibili:
                          start_live_resp['msg'])
             return
         if start_live_resp['data']['change'] == 0:
-            mirai_bot.send_group_message(qq_group_num, '直播间本来就是开启的，推流码已私聊\n直播间地址：{0}\n快来围观吧！'.format(get_live_url()))
+            mirai_bot.send_group_message(qq_group_num, [plain('直播间本来就是开启的，推流码已私聊\n直播间地址：{0}\n快来围观吧！'.format(get_live_url()))])
         else:
             msg = '直播间已开启，推流码已私聊，别忘了修改直播间标题哦！\n直播间地址：{0}\n快来围观吧！'.format(get_live_url())
-            mirai_bot.send_group_message(qq_group_num, msg)
+            mirai_bot.send_group_message(qq_group_num, [plain(msg)])
         rtmp_addr = start_live_resp['data']['rtmp']['addr']
         rtmp_code = start_live_resp['data']['rtmp']['code']
-        mirai_bot.send_private_message(qq_group_num, qq, 'RTMP推流地址：{0}\n秘钥：{1}'.format(rtmp_addr, rtmp_code))
+        mirai_bot.send_temp_message(qq_group_num, qq, [plain('RTMP推流地址：{0}\n秘钥：{1}'.format(rtmp_addr, rtmp_code))])
 
-    def stop_live(self, qq_group_num: str) -> None:
+    def stop_live(self, qq_group_num: int) -> None:
         bili_jct = self.cookies.get('bili_jct')
         if bili_jct is None:
-            return mirai_bot.send_group_message(qq_group_num, 'B站登录过期')
+            return mirai_bot.send_group_message(qq_group_num, [plain('B站登录过期')])
         rid = config.bilibili['room_id']
         post_msg = 'room_id={0}&csrf={1}'.format(rid, bili_jct)
         resp = requests.request(method='POST', url='https://api.live.bilibili.com/room/v1/Room/stopLive',
@@ -141,14 +142,14 @@ class Bilibili:
                          stop_live_resp['msg'])
             return
         if stop_live_resp['data']['change'] == 0:
-            mirai_bot.send_group_message(qq_group_num, '直播间本来就是关闭的')
+            mirai_bot.send_group_message(qq_group_num, [plain('直播间本来就是关闭的')])
         else:
-            mirai_bot.send_group_message(qq_group_num, '直播间已关闭')
+            mirai_bot.send_group_message(qq_group_num, [plain('直播间已关闭')])
 
-    def change_live_title(self, qq_group_num: str, title: str) -> None:
+    def change_live_title(self, qq_group_num: int, title: str) -> None:
         bili_jct = self.cookies.get('bili_jct')
         if bili_jct is None:
-            return mirai_bot.send_group_message(qq_group_num, 'B站登录过期')
+            return mirai_bot.send_group_message(qq_group_num, [plain('B站登录过期')])
         rid = config.bilibili['room_id']
         post_msg = 'room_id={0}&title={1}&csrf={2}'.format(rid, title, bili_jct).encode('utf-8')
         resp = requests.request(method='POST', url='https://api.live.bilibili.com/room/v1/Room/update',
@@ -162,9 +163,9 @@ class Bilibili:
             logger.error('修改直播间标题失败，错误码：%d，错误信息1：%s，错误信息2：%s', change_live_title_resp['code'],
                          change_live_title_resp['message'],
                          change_live_title_resp['msg'])
-            mirai_bot.send_group_message(qq_group_num, '修改直播间标题失败，请联系管理员')
+            mirai_bot.send_group_message(qq_group_num, [plain('修改直播间标题失败，请联系管理员')])
         else:
-            mirai_bot.send_group_message(qq_group_num, '直播间标题已修改为：' + title)
+            mirai_bot.send_group_message(qq_group_num, [plain('直播间标题已修改为：' + title)])
 
     def get_video_info(self, aid: int = 0, bid: str = None):
         if aid != 0:

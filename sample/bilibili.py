@@ -116,7 +116,8 @@ class Bilibili:
                          start_live_resp['msg'])
             return
         if start_live_resp['data']['change'] == 0:
-            mirai_bot.send_group_message(qq_group_num, [plain('直播间本来就是开启的，推流码已私聊\n直播间地址：{0}\n快来围观吧！'.format(get_live_url()))])
+            mirai_bot.send_group_message(qq_group_num,
+                                         [plain('直播间本来就是开启的，推流码已私聊\n直播间地址：{0}\n快来围观吧！'.format(get_live_url()))])
         else:
             msg = '直播间已开启，推流码已私聊，别忘了修改直播间标题哦！\n直播间地址：{0}\n快来围观吧！'.format(get_live_url())
             mirai_bot.send_group_message(qq_group_num, [plain(msg)])

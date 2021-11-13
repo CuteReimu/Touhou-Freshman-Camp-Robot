@@ -9,8 +9,8 @@ import message
 import message_whitelist
 import mirai_bot
 from logger import logger
-from schedule import schedule
 from mirai_bot_chain import plain
+from schedule import schedule
 
 schedule_id = 0
 
@@ -125,7 +125,8 @@ class AddSchedule(message.IMessageDispatcher):
 
     def execute(self, qq_group_number: int, qq: int, *args: str) -> None:
         if len(args) < 3:
-            mirai_bot.send_group_message(qq_group_number, [plain('指令格式如下：\n增加预约 211225 190000 预约文字\n                 年月日 时分秒')])
+            mirai_bot.send_group_message(qq_group_number,
+                                         [plain('指令格式如下：\n增加预约 211225 190000 预约文字\n                 年月日 时分秒')])
             return
         try:
             date_obj = datetime.strptime(args[0] + args[1], '%y%m%d%H%M%S')

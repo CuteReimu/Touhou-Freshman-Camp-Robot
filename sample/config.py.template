@@ -35,6 +35,6 @@ schedule = {
 }
 
 repeater_interruption = {
-    'qq_group': [12345678],  # 开启禁止复读功能的qq群
+    'qq_group': ['12345678'],  # 开启禁止复读功能的qq群
     'allowance': 4 # 允许群内复读的次数
 }

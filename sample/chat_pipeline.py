@@ -8,6 +8,7 @@ from logger import logger
 class IChatPipeline(object, metaclass=abc.ABCMeta):
     """这是消息处理器的父类，当你想要新增自己的消息处理器时，继承这个类即可。
     最后，不要忘记在chat_pipeline_manager.py中的init_chat_pipeline函数里面加入你新增的这个消息处理器。"""
+
     @abc.abstractmethod
     def on_init(self):
         """在程序开始，加载过程中，会执行这个函数。"""

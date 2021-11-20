@@ -1,12 +1,12 @@
 <div align="center">
-  
+
 # 东方Project沙包聚集地机器人
 ![](https://img.shields.io/github/languages/top/FlyingLu/Touhou-Freshman-Camp-Robot "语言")
 [![](https://img.shields.io/github/workflow/status/FlyingLu/Touhou-Freshman-Camp-Robot/CodeQL)](https://github.com/FlyingLu/Touhou-Freshman-Camp-Robot/actions/workflows/codeql-analysis.yml "代码分析")
 [![](https://img.shields.io/github/contributors/FlyingLu/Touhou-Freshman-Camp-Robot)](https://github.com/FlyingLu/Touhou-Freshman-Camp-Robot/graphs/contributors "贡献者")
 [![](https://img.shields.io/github/license/FlyingLu/Touhou-Freshman-Camp-Robot)](https://github.com/FlyingLu/Touhou-Freshman-Camp-Robot/blob/master/LICENSE "许可协议")
 </div>
-  
+
 这是东方Project沙包聚集地（以下简称“红群”）的机器人，基于`Python3`编写
 
 ## 声明
@@ -52,10 +52,10 @@ adapterSettings:
     host: localhost
     port: 8080
     cors: [*]
-  
+
   webhook:
     ## 回调(上报)地址，端口请自行配置
-    destinations: 
+    destinations:
     - 'http://localhost:8888/'
 ```
 4. 启动mirai并登录QQ
@@ -68,3 +68,4 @@ adapterSettings:
 | 框架搭建 | 奇葩の灵梦 |
 | mirai接入 | 東方妖ゝ夢 |
 | B站API接入 | 奇葩の灵梦 |
+| 打断复读功能 | Phiomoe |

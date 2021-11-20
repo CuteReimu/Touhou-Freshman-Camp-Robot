@@ -1,5 +1,6 @@
 import chat_pipeline
 import chat_pipeline_bilibili_video
+import chat_pipeline_repeater_interruption
 
 
 def deal_with_msg(qq_group_number: str, qq: str, msg: str):
@@ -17,3 +18,4 @@ def __init_chat_pipeline(pipeline: chat_pipeline.IChatPipeline):
 def init_chat_pipeline():
     __init_chat_pipeline(chat_pipeline.MessagePipeline())
     __init_chat_pipeline(chat_pipeline_bilibili_video.BilibiliVideoPipeline())
+    __init_chat_pipeline(chat_pipeline_repeater_interruption.RepeaterInterruptionPipeline())

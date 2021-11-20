@@ -1,20 +1,23 @@
 import chat_pipeline
+import config
 import mirai_bot
 from mirai_bot_chain import plain
-import config
 
 
 class RepeaterInterruptionPipeline(chat_pipeline.IChatPipeline):
-    def on_init(self):
-        self.counter = 0
+    def __init__(self):
         self.last_msg_chain = []
+        self.counter = 0
+
+    def on_init(self):
+        pass
 
     def execute(self, qq_group_number: int, qq: int, msg_chain: list) -> str:
         if qq_group_number in config.repeater_interruption['qq_group']:
-            if self.counter >= config.repeater_interruption['allowance']\
-            and msg_chain[1]['type'] == 'Plain'\
-            and msg_chain[1]['text'] == '打断复读~~ (^-^)':
-                mirai_bot.send_group_message(qq_group_number, [plain('(*/ω＼\*)')])
+            if self.counter >= config.repeater_interruption['allowance'] \
+                    and msg_chain[1]['type'] == 'Plain' \
+                    and msg_chain[1]['text'] == '打断复读~~ (^-^)':
+                mirai_bot.send_group_message(qq_group_number, [plain('(*/ω\\*)')])
                 self.counter = 0
             elif self.counter >= config.repeater_interruption['allowance']:
                 mirai_bot.send_group_message(qq_group_number, [plain('打断复读~~ (^-^)')])
@@ -26,6 +29,7 @@ class RepeaterInterruptionPipeline(chat_pipeline.IChatPipeline):
             self.last_msg_chain = msg_chain
         return ' '
 
+    @staticmethod
     def __equals(msg_chain: list, last_msg_chain: list) -> bool:
         if len(msg_chain) < 2 or len(msg_chain) != len(last_msg_chain):
             return False
@@ -41,8 +45,8 @@ class RepeaterInterruptionPipeline(chat_pipeline.IChatPipeline):
                 if msg_chain[msg_idx]['target'] != last_msg_chain[msg_idx]['target']:
                     return False
             elif msg_chain[msg_idx]['type'] == 'Image':
-                if msg_chain[msg_idx]['imageId'] != last_msg_chain[msg_idx]['imageId']\
-                and msg_chain[msg_idx]['url'] != last_msg_chain[msg_idx]['url']:
+                if msg_chain[msg_idx]['imageId'] != last_msg_chain[msg_idx]['imageId'] \
+                        and msg_chain[msg_idx]['url'] != last_msg_chain[msg_idx]['url']:
                     return False
             else:
                 return False

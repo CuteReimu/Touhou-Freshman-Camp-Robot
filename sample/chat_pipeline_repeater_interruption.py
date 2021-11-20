@@ -6,13 +6,13 @@ import config
 
 class RepeaterInterruptionPipeline(chat_pipeline.IChatPipeline):
     def on_init(self):
-        self.counter = 1
+        self.counter = 0
         self.last_msg_chain = []
 
     def execute(self, qq_group_number: int, qq: int, msg_chain: list) -> str:
         if qq_group_number in config.repeater_interruption['qq_group']:
-            if self.counter >= config.repeater_interruption['allowance'] \
-            and msg_chain[1]['type'] == 'Plain' \
+            if self.counter >= config.repeater_interruption['allowance']\
+            and msg_chain[1]['type'] == 'Plain'\
             and msg_chain[1]['text'] == '打断复读~~ (^-^)':
                 mirai_bot.send_group_message(qq_group_number, [plain('(*/ω＼\*)')])
                 self.counter = 0
@@ -35,15 +35,16 @@ class RepeaterInterruptionPipeline(chat_pipeline.IChatPipeline):
                 return False
 
             if msg_chain[msg_idx]['type'] == 'Plain':
-                if msg_chain[msg_idx]['text'] == last_msg_chain[msg_idx]['text']:
-                    return True
+                if msg_chain[msg_idx]['text'] != last_msg_chain[msg_idx]['text']:
+                    return False
             elif msg_chain[msg_idx]['type'] == 'At':
-                if msg_chain[msg_idx]['target'] == last_msg_chain[msg_idx]['target']:
-                    return True
+                if msg_chain[msg_idx]['target'] != last_msg_chain[msg_idx]['target']:
+                    return False
             elif msg_chain[msg_idx]['type'] == 'Image':
-                if msg_chain[msg_idx]['imageId'] == last_msg_chain[msg_idx]['imageId']:
-                    return True
-                elif msg_chain[msg_idx]['url'] == last_msg_chain[msg_idx]['url']:
-                    return True
+                if msg_chain[msg_idx]['imageId'] != last_msg_chain[msg_idx]['imageId']\
+                and msg_chain[msg_idx]['url'] != last_msg_chain[msg_idx]['url']:
+                    return False
+            else:
+                return False
 
-        return False
+        return True

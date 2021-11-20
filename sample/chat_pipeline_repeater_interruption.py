@@ -14,7 +14,7 @@ class RepeaterInterruptionPipeline(chat_pipeline.IChatPipeline):
     def execute(self, qq_group_number: str, qq: str, msg: str) -> str:
         if qq_group_number in config.repeater_interruption['qq_group']:
             if self.counter >= config.repeater_interruption['allowance'] \
-                    and msg == '打断复读~~ (^-^)':
+                    and '打断复读~~ (^-^)' in msg:
                 myqq.send_group_message(qq_group_number, '(*/ω\\*)')
                 self.counter = 0
             elif self.counter >= config.repeater_interruption['allowance']:

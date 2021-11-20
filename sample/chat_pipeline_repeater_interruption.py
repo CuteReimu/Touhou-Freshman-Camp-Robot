@@ -13,7 +13,7 @@ class RepeaterInterruptionPipeline(chat_pipeline.IChatPipeline):
         if qq_group_number in config.repeater_interruption['qq_group']:
             if self.counter >= config.repeater_interruption['allowance'] \
             and msg_chain[1]['type'] == 'Plain' \
-            and msg_chain[1]['text'] == '打断复读 ^-^':
+            and msg_chain[1]['text'] == '打断复读~~ (^-^)':
                 mirai_bot.send_group_message(qq_group_number, [plain('(*/ω＼\*)')])
                 self.counter = 0
             elif self.counter >= config.repeater_interruption['allowance']:

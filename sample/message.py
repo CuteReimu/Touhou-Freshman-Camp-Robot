@@ -7,6 +7,7 @@ import myqq
 class IMessageDispatcher(object, metaclass=abc.ABCMeta):
     """这是聊天指令处理器的父类，当你想要新增自己的聊天指令处理器时，继承这个类即可。
     最后，不要忘记在message_dispatcher.py中的init_message函数里面加入你新增的这个聊天指令处理器。"""
+
     def __init__(self, name: str, tips: str):
         """name是群友输入聊天指令时，第一个空格前的内容。tips是查看帮助时显示的内容。"""
         self.name = name

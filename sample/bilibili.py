@@ -31,7 +31,8 @@ class Bilibili:
     def login(self) -> None:
         if len(self.cookies) != 0:
             return
-        resp = requests.get('https://passport.bilibili.com/web/captcha/combine?plat=6')
+        resp = requests.get(
+            'https://passport.bilibili.com/web/captcha/combine?plat=6')
         if resp.status_code != 200:
             logger.error('login failed, status code: %d', resp.status_code)
             raise RuntimeError
@@ -55,16 +56,19 @@ class Bilibili:
         get_key_resp = json.loads(resp.content.decode('utf-8'))
         user_name = config.bilibili['username']
         pwd = config.bilibili['password']
-        encrypt_pwd = encrypt(get_key_resp['key'].encode('utf-8'), (get_key_resp['hash'] + pwd).encode('utf-8'))
+        encrypt_pwd = encrypt(get_key_resp['key'].encode(
+            'utf-8'), (get_key_resp['hash'] + pwd).encode('utf-8'))
         post_format = 'captchaType=6&username={0}&password={1}&keep=true&key={2}&challenge={3}&validate={4}&seccode={5}'
-        post_msg = post_format.format(user_name, encrypt_pwd.decode('utf-8'), key, challenge, validate, seccode)
+        post_msg = post_format.format(user_name, encrypt_pwd.decode(
+            'utf-8'), key, challenge, validate, seccode)
         resp = requests.request(method='POST', headers={'Content-Type': 'application/x-www-form-urlencoded'},
                                 url='https://passport.bilibili.com/web/login/v2', data=post_msg)
         if resp.status_code != 200:
             logger.error('登录bilibili失败, status code: %d', resp.status_code)
         login_success_resp = json.loads(resp.content.decode('utf-8'))
         if login_success_resp['code'] != 0:
-            logger.error('登录bilibili失败，错误码：%d, 错误信息：%s', login_success_resp['code'], login_success_resp['message'])
+            logger.error('登录bilibili失败，错误码：%d, 错误信息：%s',
+                         login_success_resp['code'], login_success_resp['message'])
             raise RuntimeError
         logger.info('登录bilibili成功')
         self.cookies = requests.utils.dict_from_cookiejar(resp.cookies)
@@ -78,15 +82,18 @@ class Bilibili:
     def get_live_status(self, qq_group_num: str) -> None:
         rid = config.bilibili['room_id']
         resp = requests.request(method='GET',
-                                url='https://api.live.bilibili.com/room/v1/Room/get_info?id={0}'.format(rid),
+                                url='https://api.live.bilibili.com/room/v1/Room/get_info?id={0}'.format(
+                                    rid),
                                 cookies=self.cookies,
                                 headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
-            logger.error("请求直播间信息失败，错误码：%s，返回内容：%s", resp.status_code, resp.content.decode('utf-8'))
+            logger.error("请求直播间信息失败，错误码：%s，返回内容：%s",
+                         resp.status_code, resp.content.decode('utf-8'))
             return
         live_status_resp = json.loads(resp.content.decode('utf-8'))
         if live_status_resp['code'] != 0:
-            logger.error('请求直播间状态失败，错误码：%d，错误信息：%s，', live_status_resp['code'], live_status_resp['message'])
+            logger.error('请求直播间状态失败，错误码：%d，错误信息：%s，',
+                         live_status_resp['code'], live_status_resp['message'])
             return
         if live_status_resp['data']['live_status'] == 0:
             myqq.send_group_message(qq_group_num, '直播间状态：未开播')
@@ -102,7 +109,8 @@ class Bilibili:
             return
         rid = config.bilibili['room_id']
         area = config.bilibili['area_v2']
-        post_msg = 'room_id={0}&platform=pc&area_v2={1}&csrf_token={2}&csrf={3}'.format(rid, area, bili_jct, bili_jct)
+        post_msg = 'room_id={0}&platform=pc&area_v2={1}&csrf_token={2}&csrf={3}'.format(
+            rid, area, bili_jct, bili_jct)
         resp = requests.request(method='POST', url='https://api.live.bilibili.com/room/v1/Room/startLive',
                                 cookies=self.cookies, data=post_msg,
                                 headers={'Content-Type': 'application/x-www-form-urlencoded'})
@@ -115,13 +123,16 @@ class Bilibili:
                          start_live_resp['msg'])
             return
         if start_live_resp['data']['change'] == 0:
-            myqq.send_group_message(qq_group_num, '直播间本来就是开启的，推流码已私聊\n直播间地址：{0}\n快来围观吧！'.format(get_live_url()))
+            myqq.send_group_message(
+                qq_group_num, '直播间本来就是开启的，推流码已私聊\n直播间地址：{0}\n快来围观吧！'.format(get_live_url()))
         else:
-            msg = '直播间已开启，推流码已私聊，别忘了修改直播间标题哦！\n直播间地址：{0}\n快来围观吧！'.format(get_live_url())
+            msg = '直播间已开启，推流码已私聊，别忘了修改直播间标题哦！\n直播间地址：{0}\n快来围观吧！'.format(
+                get_live_url())
             myqq.send_group_message(qq_group_num, msg)
         rtmp_addr = start_live_resp['data']['rtmp']['addr']
         rtmp_code = start_live_resp['data']['rtmp']['code']
-        myqq.send_private_message(qq_group_num, qq, 'RTMP推流地址：{0}\n秘钥：{1}'.format(rtmp_addr, rtmp_code))
+        myqq.send_private_message(
+            qq_group_num, qq, 'RTMP推流地址：{0}\n秘钥：{1}'.format(rtmp_addr, rtmp_code))
 
     def stop_live(self, qq_group_num: str) -> None:
         bili_jct = self.cookies.get('bili_jct')
@@ -150,7 +161,8 @@ class Bilibili:
         if bili_jct is None:
             return myqq.send_group_message(qq_group_num, 'B站登录过期')
         rid = config.bilibili['room_id']
-        post_msg = 'room_id={0}&title={1}&csrf={2}'.format(rid, title, bili_jct).encode('utf-8')
+        post_msg = 'room_id={0}&title={1}&csrf={2}'.format(
+            rid, title, bili_jct).encode('utf-8')
         resp = requests.request(method='POST', url='https://api.live.bilibili.com/room/v1/Room/update',
                                 cookies=self.cookies, data=post_msg,
                                 headers={'Content-Type': 'application/x-www-form-urlencoded'})
@@ -168,7 +180,8 @@ class Bilibili:
 
     def get_video_info(self, aid: int = 0, bid: str = None):
         if aid != 0:
-            url = 'https://api.bilibili.com/x/web-interface/view?aid={0}'.format(aid)
+            url = 'https://api.bilibili.com/x/web-interface/view?aid={0}'.format(
+                aid)
         elif bid is not None and bid != '':
             url = 'https://api.bilibili.com/x/web-interface/view?bvid=' + bid
         else:
@@ -180,10 +193,38 @@ class Bilibili:
             return None
         video_info = json.loads(resp.content.decode('utf-8'))
         if video_info['code'] != 0:
-            logger.info('获取视频详细信息失败，错误码：%d，错误信息1：%s', video_info['code'], video_info['message'])
+            logger.info('获取视频详细信息失败，错误码：%d，错误信息1：%s',
+                        video_info['code'], video_info['message'])
             return None
         else:
             return video_info['data']
+
+    def get_user_vedio(self, mid:int, pn:int, ps:int, order:str, tid:int, keyword:str):
+        if mid is None and mid != 0:
+            logger.error('必须填写mid')
+            return None
+        if pn is None:
+            pn = 1
+        if ps is None:
+            ps = 10
+        res = requests.request(
+            method='GET',
+            url="http://api.bilibili.com/x/space/arc/search",
+            params={'mid': mid, 'order': order, 'tid': tid,
+                    'keyword': keyword, 'pn': pn, 'ps': ps},
+            cookies=self.cookies,
+            headers={'Content-Type': 'data/json'}
+        )
+        if res.status_code != 200:
+            logger.info('获取用户视频列表失败，错误码：%d', res.status_code)
+            return None
+        user_vedio = json.loads(res.content.decode('utf-8'))
+        if user_vedio['code'] == 0:
+            return user_vedio['data']['list']['vlist']
+        else:
+            logger.info('获取用户视频列表失败，错误码：%d，错误信息1：%s',
+                        user_vedio['code'], user_vedio['message'])
+            return None
 
 
 bili = Bilibili()

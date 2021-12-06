@@ -14,19 +14,19 @@ class Schedule:
     def run(self):
         threading.Thread(target=self.__scheduler.run, daemon=True).start()
 
-    def __action(self, action, action_id: int):
+    def __action(self, action, action_id: int, argument=()):
         with self.__lock:
             try:
                 self.cache.pop(action_id)
             except KeyError:
                 pass
-        action()
+        action(*argument)
 
     def add(self, delay: int, action, argument=()) -> int:
         with self.__lock:
             self.__id += 1
             if delay > 0:
-                event = self.__scheduler.enter(delay, 1, self.__action(action, self.__id), argument)
+                event = self.__scheduler.enter(delay, 1, self.__action, (action, self.__id, argument))
                 self.cache[self.__id] = event
             else:
                 action()

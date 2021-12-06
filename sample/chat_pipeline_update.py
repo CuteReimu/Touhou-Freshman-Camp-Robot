@@ -12,10 +12,10 @@ class UpdatePipeline(chat_pipeline.IChatPipeline):
         self.__already_group_ids = set()
 
     def on_init(self):
-        p = Path(os.path.join('..', 'update.txt'))
+        p = Path('../update.txt')
         if p.exists():
             self.__update_content = p.read_text('utf-8').strip()
-            p.rename(os.path.join('..', 'update.txt.bak'))
+            p.rename('../update.txt.bak')
 
     def execute(self, qq_group_number: str, qq: str, msg: str) -> str:
         if len(self.__update_content) > 0 and qq_group_number in config.qq['available_qq_group']:

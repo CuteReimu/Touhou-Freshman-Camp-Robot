@@ -47,6 +47,7 @@ class Schedule:
             try:
                 schedule_data = self.cache.pop(idx)
                 self.__scheduler.cancel(schedule_data.event)
+                return True
             except KeyError:
                 return False
 

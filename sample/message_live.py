@@ -56,9 +56,4 @@ class ChangeLiveTitle(message.IMessageDispatcher):
             return
         if len(args) > 10:
             return
-        title = ''
-        for s in args:
-            if title != '':
-                title += ' '
-            title += s
-        bili.change_live_title(qq_group_number, title)
+        bili.change_live_title(qq_group_number, ' '.join(args))

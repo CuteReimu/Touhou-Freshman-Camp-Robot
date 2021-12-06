@@ -36,7 +36,7 @@ class Schedule:
         with self.__lock:
             self.__id += 1
             if date_obj > datetime.now():
-                event = self.__scheduler.enterabs(date_obj, 1, action, argument)
+                event = self.__scheduler.enterabs(date_obj.timestamp(), 1, action, argument)
                 self.cache[self.__id] = event
             else:
                 action()
@@ -46,7 +46,7 @@ class Schedule:
         with self.__lock:
             try:
                 schedule_data = self.cache.pop(idx)
-                self.__scheduler.cancel(schedule_data.event)
+                self.__scheduler.cancel(schedule_data)
                 return True
             except KeyError:
                 return False

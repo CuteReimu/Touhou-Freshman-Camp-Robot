@@ -88,7 +88,7 @@ class DelVote(message.IMessageDispatcher):
             vote_qq_group = ''
             vote_content = ''
             vote_schedule_id = 0
-            vote_cache: dict[str, str] = {}
+            vote_cache = {}
             if schedule.remove(__vote_schedule_id):
                 myqq.send_group_message(qq_group_number, '清除投票成功')
             else:

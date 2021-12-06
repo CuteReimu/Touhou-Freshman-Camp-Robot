@@ -9,7 +9,7 @@
   
 这是东方Project沙包聚集地（以下简称“红群”）的机器人，基于`Python3`编写
 
-## 简介
+## 声明
 * **本项目采用`AGPLv3`协议开源，任何间接接触本项目的软件也要求使用`AGPLv3`协议开源**
 * **不鼓励，不支持一切商业用途**
 * **由于使用本项目提供的接口、文档等造成的不良影响和后果与本人和红群无关**
@@ -21,9 +21,9 @@
 * QQ登录部分使用的是MyQQ框架的HTTPAPI，官网：https://www.myqqx.cn/
 * Bilibili登录和开播部分是自己实现的，直接调用Bilibili的API接口：https://github.com/SocialSisterYi/bilibili-API-collect
 * 权限管理部分，在程序内部维护了一个`dict`实现
+* 消息处理部分
 
 当收到消息时，消息将会被`chat_pipeline.py`里的`pipelines`中的所有消息处理器依次处理，机器人将会作出相应的反应。
-
 默认已经提供了一个`MessagePipeline`，对群聊中的指令进行处理，详细可以参考`message`开头的文件。
 
 ## 安装方法
@@ -31,9 +31,18 @@
 ```bash
 python setup.py install
 ```
-2. 下载并安装MyQQ，登录机器人QQ号
-3. 将`config.py.template`重命名为`config.py`，并进行配置
+2. 下载并安装MyQQ，并安装MyQQ的HTTPAPI插件，登录机器人QQ号
+3. 将`config.py.template`重命名为`config.py`，并进行配置，注意要与myqq的回调和监听端口对应上
 4. 运行main.py
 
 ## 后续优化
-考虑到MyQQ框架并不算很稳定，期待后续能使用更加稳定的框架替换，例如Mirai等
+考虑到MyQQ框架并不算很稳定，我们已切出另一个Mirai分支，并支持了Mirai登录QQ和收发消息的功能。
+
+## 主要开发人员
+| 功能 | 人员 |
+| ---- | ---- |
+| 框架搭建 | 奇葩の灵梦 |
+| myqq接入 | 奇葩の灵梦 |
+| mirai接入 | 東方妖ゝ夢 |
+| B站API接入 | 奇葩の灵梦 |
+| 打断复读功能 | Phiomoe |

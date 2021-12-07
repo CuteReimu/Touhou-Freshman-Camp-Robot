@@ -34,8 +34,13 @@ def update_whitelist_file():
 
 
 class DelWhitelist(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('删除白名单', '删除白名单 对方QQ号')
+    @property
+    def name(self) -> str:
+        return '删除白名单'
+
+    @property
+    def tips(self) -> str:
+        return '删除白名单 对方QQ号'
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
@@ -54,8 +59,13 @@ class DelWhitelist(message.IMessageDispatcher):
 
 
 class AddWhitelist(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('增加白名单', '增加白名单 对方QQ号')
+    @property
+    def name(self) -> str:
+        return '增加白名单'
+
+    @property
+    def tips(self) -> str:
+        return '增加白名单 对方QQ号'
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
@@ -74,8 +84,13 @@ class AddWhitelist(message.IMessageDispatcher):
 
 
 class GetWhitelist(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('列出所有白名单', '列出所有白名单')
+    @property
+    def name(self) -> str:
+        return '列出所有白名单'
+
+    @property
+    def tips(self) -> str:
+        return '列出所有白名单'
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
@@ -90,8 +105,13 @@ class GetWhitelist(message.IMessageDispatcher):
 
 
 class CheckWhitelist(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('查看白名单', '查看白名单 对方QQ号')
+    @property
+    def name(self) -> str:
+        return '查看白名单'
+
+    @property
+    def tips(self) -> str:
+        return '查看白名单 对方QQ号'
 
     def check_auth(self, qq: str) -> bool:
         return True

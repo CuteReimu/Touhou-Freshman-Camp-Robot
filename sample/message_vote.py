@@ -40,8 +40,16 @@ def get_vote_result(count: int = 0) -> str:
 
 
 class AddVote(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('发起投票', '发起投票 投票内容')
+    @property
+    def name(self) -> str:
+        return '发起投票'
+
+    @property
+    def tips(self) -> str:
+        global vote_schedule_id
+        if vote_schedule_id != 0:
+            return ''
+        return '发起投票 投票内容'
 
     def __action(self):
         global vote_schedule_id
@@ -71,8 +79,16 @@ class AddVote(message.IMessageDispatcher):
 
 
 class DelVote(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('确定清除投票', '确定清除投票')
+    @property
+    def name(self) -> str:
+        return '确定清除投票'
+
+    @property
+    def tips(self) -> str:
+        global vote_schedule_id
+        if vote_schedule_id == 0:
+            return ''
+        return '确定清除投票'
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
@@ -96,8 +112,16 @@ class DelVote(message.IMessageDispatcher):
 
 
 class ShowVote(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('查看投票', '查看投票')
+    @property
+    def name(self) -> str:
+        return '查看投票'
+
+    @property
+    def tips(self) -> str:
+        global vote_schedule_id
+        if vote_schedule_id == 0:
+            return ''
+        return '查看投票'
 
     def check_auth(self, qq: str) -> bool:
         return True
@@ -111,8 +135,16 @@ class ShowVote(message.IMessageDispatcher):
 
 
 class DoVote(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('投票', '投票 投票答案')
+    @property
+    def name(self) -> str:
+        return '投票'
+
+    @property
+    def tips(self) -> str:
+        global vote_schedule_id
+        if vote_schedule_id == 0:
+            return ''
+        return '投票 投票答案'
 
     def check_auth(self, qq: str) -> bool:
         global vote_schedule_id

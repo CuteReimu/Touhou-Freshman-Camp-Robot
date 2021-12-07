@@ -29,6 +29,8 @@ def deal_with_message() -> str:
     except json.decoder.JSONDecodeError:
         logger.error('json请求无法解析：%s', bin_data)
         return json.dumps({"status": 0, "msg": "bad request"})
+    if data.get('MQ_type') != 2:
+        return json.dumps({"status": 1})
     from_qq = data.get('MQ_fromQQ')
     from_id = data.get('MQ_fromID')
     msg = urllib.parse.unquote(data.get('MQ_msg'))

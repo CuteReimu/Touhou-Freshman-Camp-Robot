@@ -18,7 +18,7 @@
 
 ## 架构
 整个框架包含以下三个部分：
-* QQ登录部分使用的是MyQQ框架的HTTPAPI，官网：https://www.myqqx.cn/
+* QQ登录部分使用的是MyQQ框架的HTTPAPI，官网：https://www.myqqx.com/
 * Bilibili登录和开播部分是自己实现的，直接调用Bilibili的API接口：https://github.com/SocialSisterYi/bilibili-API-collect
 * 权限管理部分，在程序内部维护了一个`dict`实现
 * 消息处理部分

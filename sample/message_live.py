@@ -5,8 +5,13 @@ from bilibili import bili
 
 
 class GetLiveState(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('直播状态', '直播状态')
+    @property
+    def name(self) -> str:
+        return '直播状态'
+
+    @property
+    def tips(self) -> str:
+        return '直播状态'
 
     def check_auth(self, qq: str) -> bool:
         return True
@@ -18,8 +23,13 @@ class GetLiveState(message.IMessageDispatcher):
 
 
 class StartLive(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('开始直播', '开始直播')
+    @property
+    def name(self) -> str:
+        return '开始直播'
+
+    @property
+    def tips(self) -> str:
+        return '开始直播'
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_whitelist.whitelist_cache
@@ -31,8 +41,13 @@ class StartLive(message.IMessageDispatcher):
 
 
 class StopLive(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('关闭直播', '关闭直播')
+    @property
+    def name(self) -> str:
+        return '关闭直播'
+
+    @property
+    def tips(self) -> str:
+        return '关闭直播'
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_whitelist.whitelist_cache
@@ -44,8 +59,13 @@ class StopLive(message.IMessageDispatcher):
 
 
 class ChangeLiveTitle(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('修改直播标题', '修改直播标题 新标题')
+    @property
+    def name(self) -> str:
+        return '修改直播标题'
+
+    @property
+    def tips(self) -> str:
+        return '修改直播标题 新标题'
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_whitelist.whitelist_cache

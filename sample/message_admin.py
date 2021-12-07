@@ -35,8 +35,13 @@ def update_admin_file():
 
 
 class DelAdmin(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('删除管理员', '删除管理员 对方QQ号')
+    @property
+    def name(self) -> str:
+        return '删除管理员'
+
+    @property
+    def tips(self) -> str:
+        return '删除管理员 对方QQ号'
 
     def check_auth(self, qq: str) -> bool:
         return qq == config.qq['super_admin_qq']
@@ -57,8 +62,13 @@ class DelAdmin(message.IMessageDispatcher):
 
 
 class AddAdmin(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('增加管理员', '增加管理员 对方QQ号')
+    @property
+    def name(self) -> str:
+        return '增加管理员'
+
+    @property
+    def tips(self) -> str:
+        return '增加管理员 对方QQ号'
 
     def check_auth(self, qq: str) -> bool:
         return qq == config.qq['super_admin_qq']
@@ -76,8 +86,13 @@ class AddAdmin(message.IMessageDispatcher):
 
 
 class GetAdmin(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('查看管理员', '查看管理员')
+    @property
+    def name(self) -> str:
+        return '查看管理员'
+
+    @property
+    def tips(self) -> str:
+        return '查看管理员'
 
     def check_auth(self, qq: str) -> bool:
         return True

@@ -1,9 +1,11 @@
+import os
 from datetime import datetime
 from datetime import timedelta
 
 import message
 import message_admin
 import myqq
+from logger import logger
 from schedule import schedule
 
 vote_qq_group = ''
@@ -11,6 +13,56 @@ vote_content = ''
 vote_schedule_id = 0
 vote_cache: dict[str, str] = {}
 vote_forbidden_words: list[str] = []
+
+
+def vote_action():
+    global vote_schedule_id
+    dt = datetime.now()
+    if dt.hour < 18:
+        vote_schedule_id = schedule.add(3600 * 6, vote_action)
+    else:
+        vote_schedule_id = schedule.add(3600 * 18, vote_action)
+    myqq.send_group_message(vote_qq_group, '投票“%s”正在火热进行中，' % vote_content + get_vote_result(3))
+
+
+def on_init():
+    if os.path.exists('../vote.txt'):
+        with open('../vote.txt', 'r') as f:
+            global vote_qq_group, vote_content, vote_schedule_id, vote_cache, vote_forbidden_words
+            if f.readline().strip().lower() == 'false':
+                return
+            vote_qq_group = f.readline().strip()
+            vote_content = f.readline().strip()
+            is_answer = True
+            line = f.readline()
+            while line:
+                line = line.strip()
+                if is_answer:
+                    if line == '==========':
+                        is_answer = False
+                    else:
+                        vote_cache[line] = f.readline().strip()
+                else:
+                    vote_forbidden_words.append(line)
+                line = f.readline()
+            dt = datetime.now().replace(hour=12, minute=0, second=0, microsecond=0) + timedelta(days=1)
+            vote_schedule_id = schedule.addabs(dt, vote_action)
+
+
+def update_vote_file():
+    try:
+        with open('../vote.txt', 'w') as f:
+            global vote_qq_group, vote_content, vote_schedule_id, vote_cache, vote_forbidden_words
+            f.write(str(vote_schedule_id != 0) + '\n')
+            if vote_schedule_id != 0:
+                f.write(vote_qq_group + '\n' + vote_content + '\n')
+                for key, val in vote_cache.items():
+                    f.write(key + '\n' + val + '\n')
+                f.write('==========\n')
+                for word in vote_forbidden_words:
+                    f.write(word + '\n')
+    except IOError:
+        logger.error('update vote file failed')
 
 
 def get_vote_result(count: int = 0) -> str:
@@ -52,15 +104,6 @@ class AddVote(message.IMessageDispatcher):
             return ''
         return '发起投票 投票内容'
 
-    def __action(self):
-        global vote_schedule_id
-        dt = datetime.now()
-        if dt.hour < 18:
-            vote_schedule_id = schedule.add(3600 * 6, self.__action)
-        else:
-            vote_schedule_id = schedule.add(3600 * 18, self.__action)
-        myqq.send_group_message(vote_qq_group, '投票“%s”正在火热进行中，' % vote_content + get_vote_result(3))
-
     def check_auth(self, qq: str) -> bool:
         return qq in message_admin.admin_cache
 
@@ -73,9 +116,12 @@ class AddVote(message.IMessageDispatcher):
             myqq.send_group_message(qq_group_number, '指令格式如下：\n发起投票 投票内容')
             return
         vote_qq_group = qq_group_number
-        vote_content = ' '.join(args)
+        vote_content = ' '.join(args).strip()
+        if '\n' in vote_content:
+            return
         dt = datetime.now().replace(hour=12, minute=0, second=0, microsecond=0) + timedelta(days=1)
-        vote_schedule_id = schedule.addabs(dt, self.__action)
+        vote_schedule_id = schedule.addabs(dt, vote_action)
+        update_vote_file()
         myqq.send_group_message(qq_group_number, '发起“%s”的投票成功' % vote_content)
 
 
@@ -107,9 +153,11 @@ class DelVote(message.IMessageDispatcher):
             vote_schedule_id = 0
             vote_cache = {}
             if schedule.remove(__vote_schedule_id):
-                myqq.send_group_message(qq_group_number, '清除投票成功')
+                ret_msg = '清除投票成功'
             else:
-                myqq.send_group_message(qq_group_number, '尽管清除投票成功了，但是貌似出了一些问题，建议检查一下')
+                ret_msg = '尽管清除投票成功了，但是貌似出了一些问题，建议检查一下'
+            update_vote_file()
+            myqq.send_group_message(qq_group_number, ret_msg)
 
 
 class ShowVote(message.IMessageDispatcher):
@@ -176,6 +224,7 @@ class DoVote(message.IMessageDispatcher):
         else:
             myqq.send_group_message(qq_group_number, '你进行了投票：' + content)
         vote_cache[qq] = content
+        update_vote_file()
 
 
 class AddVoteForbiddenWords(message.IMessageDispatcher):
@@ -209,6 +258,7 @@ class AddVoteForbiddenWords(message.IMessageDispatcher):
                 illegal_vote.append(k)
         for k in illegal_vote:
             vote_cache.pop(k)
+        update_vote_file()
         myqq.send_group_message(qq_group_number, '投票屏蔽词增加成功，现在的屏蔽词有：\n' + '\n'.join(vote_forbidden_words))
 
 
@@ -238,6 +288,7 @@ class DelVoteForbiddenWords(message.IMessageDispatcher):
         content = ' '.join(args).strip()
         try:
             vote_forbidden_words.remove(content)
+            update_vote_file()
             myqq.send_group_message(qq_group_number, '投票屏蔽词删除成功，现在的屏蔽词有：\n' + '\n'.join(vote_forbidden_words))
         except ValueError:
             myqq.send_group_message(qq_group_number, '没有这个屏蔽词')

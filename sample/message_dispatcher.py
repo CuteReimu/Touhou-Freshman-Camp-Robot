@@ -37,3 +37,5 @@ def init_message():
     __init_message(message_vote.DelVote())
     __init_message(message_vote.ShowVote())
     __init_message(message_vote.DoVote())
+    __init_message(message_vote.AddVoteForbiddenWords())
+    __init_message(message_vote.DelVoteForbiddenWords())

@@ -31,7 +31,7 @@ logging_config = {
 
 schedule = {
     'qq_group': ['12345678'],  # 定时事件的QQ群
-    'before': [timedelta(hours=3), timedelta(hours=6)]  # 提前提醒的时间
+    'before': [timedelta(hours=3), timedelta(hours=6)],  # 提前提醒的时间
     'video_push_delay': 600
 }
 

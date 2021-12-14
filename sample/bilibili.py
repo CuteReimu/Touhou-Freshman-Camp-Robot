@@ -213,7 +213,7 @@ class Bilibili:
         )
         if res.status_code != 200:
             logger.info('获取用户视频列表失败，错误码：%d', res.status_code)
-            return None
+            return []
         user_video = json.loads(res.content.decode('utf-8'))
         if user_video['code'] == 0:
             vlist = user_video['data']['list']['vlist']
@@ -221,7 +221,7 @@ class Bilibili:
         else:
             logger.info('获取用户视频列表失败，错误码：%d，错误信息1：%s',
                         user_video['code'], user_video['message'])
-            return None
+            return []
 
 
 bili = Bilibili()

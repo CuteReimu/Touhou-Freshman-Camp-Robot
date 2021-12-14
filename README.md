@@ -44,3 +44,4 @@ python setup.py install
 | 奇葩の灵梦 | 框架搭建、myqq接入、B站API接入、预约功能、投票功能  |
 | 東方妖ゝ夢 | mirai接入 |
 | Phiomoe | 打断复读功能 |
+| Death | B站视频推送功能 |

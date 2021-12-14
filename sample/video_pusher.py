@@ -4,7 +4,7 @@ from schedule import schedule
 from bilibili import bili
 import config
 
-class NewVideoPusher():
+class NewVideoPusher:
     def __init__(self, mid):
         self.__mid = int(mid)
         if os.path.exists('../latestvideo.txt'):

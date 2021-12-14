@@ -199,7 +199,7 @@ class Bilibili:
         else:
             return video_info['data']
 
-    def get_user_vedio(self, mid:int, pn:int=1, ps:int=25, order:str='', tid:int=None, keyword:str=''):
+    def get_user_video(self, mid:int, pn:int=1, ps:int=25, order:str='', tid:int=None, keyword:str=''):
         if mid == None:
             logger.error('必须填写mid')
             return None
@@ -214,13 +214,13 @@ class Bilibili:
         if res.status_code != 200:
             logger.info('获取用户视频列表失败，错误码：%d', res.status_code)
             return None
-        user_vedio = json.loads(res.content.decode('utf-8'))
-        if user_vedio['code'] == 0:
-            vlist = user_vedio['data']['list']['vlist']
+        user_video = json.loads(res.content.decode('utf-8'))
+        if user_video['code'] == 0:
+            vlist = user_video['data']['list']['vlist']
             return vlist
         else:
             logger.info('获取用户视频列表失败，错误码：%d，错误信息1：%s',
-                        user_vedio['code'], user_vedio['message'])
+                        user_video['code'], user_video['message'])
             return None
 
 

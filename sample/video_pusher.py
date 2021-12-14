@@ -20,10 +20,8 @@ class newvideoPusher():
                     while(video_list[i]['bvid'] != lastestId):
                         new_video_list.append(video_list[i]['bvid'])
                         i += 1
-                f.close()
         with open('../latestvideo.txt', 'w') as f:
             f.write(video_list[0]['bvid'])
-            f.close()
         return new_video_list
 
     def __push_new_video(self):

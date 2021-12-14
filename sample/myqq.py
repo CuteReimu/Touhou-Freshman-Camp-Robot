@@ -29,6 +29,8 @@ def deal_with_message() -> str:
     except json.decoder.JSONDecodeError:
         logger.error('json请求无法解析：%s', bin_data)
         return json.dumps({"status": 0, "msg": "bad request"})
+    if data.get('MQ_type') != 2:
+        return json.dumps({"status": 1})
     from_qq = data.get('MQ_fromQQ')
     from_id = data.get('MQ_fromID')
     msg = urllib.parse.unquote(data.get('MQ_msg'))
@@ -62,20 +64,41 @@ def send_private_message(qq_group_number: str, qq: str, msg: str) -> None:
         logger.error('send private message failed, qq_group_number: %s', qq_group_number)
 
 
-def upload_pic(qq_group_number: str, pic_url: str) -> str:
+def get_pic_link(qq_group_number: str, pic_guid: str) -> str:
+    """图片GUID的格式是 [pic={xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}.jpg]"""
     resp = requests.post(config.myqq['api_url'], json={
-        'function': 'Api_UpLoadPic',
+        'function': 'Api_GetPicLink',
         'token': config.myqq['token'],
-        'params': {'c1': config.qq['robot_self_qq'], 'c2': '2', 'c3': qq_group_number, 'c4': pic_url}
+        'params': {'c1': config.qq['robot_self_qq'], 'c2': '1', 'c3': qq_group_number, 'c4': pic_guid}
     })
     ret_str = resp.content.decode('utf-8')
-    logger.debug('upload pic, return: %s', ret_str)
+    logger.debug('get pic link, return: %s', ret_str)
     if resp.status_code != 200:
-        logger.error('upload pic failed, qq_group_number: %s', qq_group_number)
+        logger.error('get pic link failed, qq_group_number: %s', qq_group_number)
         return ''
     ret = json.loads(ret_str)
     if ret['code'] != 200:
-        logger.error('upload pic failed, qq_group_number: %s, error code: %d, error msg: %s', qq_group_number,
+        logger.error('get pic link failed, qq_group_number: %s, error code: %d, error msg: %s', qq_group_number,
                      ret['code'], ret['msg'])
         return ''
     return ret['data']['ret']
+
+
+# 无用的接口，发送图片可以直接使用[pic=http://www.myqq.com]，后接本地路径或者url都行
+# def upload_pic(qq_group_number: str, pic_url: str) -> str:
+#     resp = requests.post(config.myqq['api_url'], json={
+#         'function': 'Api_UpLoadPic',
+#         'token': config.myqq['token'],
+#         'params': {'c1': config.qq['robot_self_qq'], 'c2': '2', 'c3': qq_group_number, 'c4': pic_url}
+#     })
+#     ret_str = resp.content.decode('utf-8')
+#     logger.debug('upload pic, return: %s', ret_str)
+#     if resp.status_code != 200:
+#         logger.error('upload pic failed, qq_group_number: %s', qq_group_number)
+#         return ''
+#     ret = json.loads(ret_str)
+#     if ret['code'] != 200:
+#         logger.error('upload pic failed, qq_group_number: %s, error code: %d, error msg: %s', qq_group_number,
+#                      ret['code'], ret['msg'])
+#         return ''
+#     return ret['data']['ret']

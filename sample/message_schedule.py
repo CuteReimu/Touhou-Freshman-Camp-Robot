@@ -116,8 +116,13 @@ def on_init():
 
 
 class AddSchedule(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('增加预约', '增加预约 211225 190000 预约文字\n                 年月日 时分秒')
+    @property
+    def name(self) -> str:
+        return '增加预约'
+
+    @property
+    def tips(self) -> str:
+        return '增加预约'
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_whitelist.whitelist_cache
@@ -151,15 +156,27 @@ class AddSchedule(message.IMessageDispatcher):
 
 
 class DelSchedule(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('删除预约', '删除预约 序号（请先用“预约列表”查询序号）')
+    @property
+    def name(self) -> str:
+        return '删除预约'
+
+    @property
+    def tips(self) -> str:
+        read_lock = lock.gen_rlock()
+        read_lock.acquire()
+        try:
+            if len(schedule_cache) == 0:
+                return ''
+            return '删除预约 序号'
+        finally:
+            read_lock.release()
 
     def check_auth(self, qq: str) -> bool:
         return qq in message_whitelist.whitelist_cache
 
     def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 1:
-            myqq.send_group_message(qq_group_number, '指令格式如下：\n删除预约 序号')
+            myqq.send_group_message(qq_group_number, '指令格式如下：\n删除预约 序号（请先用“预约列表”查询序号）')
             return
         try:
             del_idx = int(args[0])
@@ -184,8 +201,20 @@ class DelSchedule(message.IMessageDispatcher):
 
 
 class ListAllSchedule(message.IMessageDispatcher):
-    def __init__(self):
-        super().__init__('预约列表', '预约列表 想要展示的行数（默认5行）')
+    @property
+    def name(self) -> str:
+        return '预约列表'
+
+    @property
+    def tips(self) -> str:
+        read_lock = lock.gen_rlock()
+        read_lock.acquire()
+        try:
+            if len(schedule_cache) == 0:
+                return ''
+            return '预约列表 行数'
+        finally:
+            read_lock.release()
 
     def check_auth(self, qq: str) -> bool:
         return True
@@ -206,13 +235,16 @@ class ListAllSchedule(message.IMessageDispatcher):
         read_lock = lock.gen_rlock()
         read_lock.acquire()
         try:
-            for data in schedule_cache:
-                if i >= count:
-                    break
-                if ret != '':
-                    ret += '\n'
-                ret += '{0}  {1}  {2}'.format(data.id, data.date_obj, data.tips)
-                i += 1
+            if len(schedule_cache) == 0:
+                ret = '目前没有预约'
+            else:
+                for data in schedule_cache:
+                    if i >= count:
+                        break
+                    if ret != '':
+                        ret += '\n'
+                    ret += '{0}  {1}  {2}'.format(data.id, data.date_obj, data.tips)
+                    i += 1
         finally:
             read_lock.release()
         myqq.send_group_message(qq_group_number, ret)

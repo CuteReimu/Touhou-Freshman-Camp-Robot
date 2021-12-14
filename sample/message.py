@@ -7,10 +7,18 @@ import myqq
 class IMessageDispatcher(object, metaclass=abc.ABCMeta):
     """这是聊天指令处理器的父类，当你想要新增自己的聊天指令处理器时，继承这个类即可。
     最后，不要忘记在message_dispatcher.py中的init_message函数里面加入你新增的这个聊天指令处理器。"""
-    def __init__(self, name: str, tips: str):
-        """name是群友输入聊天指令时，第一个空格前的内容。tips是查看帮助时显示的内容。"""
-        self.name = name
-        self.tips = tips
+
+    @property
+    @abc.abstractmethod
+    def name(self) -> str:
+        """群友输入聊天指令时，第一个空格前的内容。"""
+        pass
+
+    @property
+    @abc.abstractmethod
+    def tips(self) -> str:
+        """在【帮助列表】中应该如何显示这个命令。空字符串表示不显示"""
+        pass
 
     @abc.abstractmethod
     def check_auth(self, qq: str) -> bool:
@@ -27,8 +35,13 @@ messages: dict[str, IMessageDispatcher] = {}
 
 
 class GetTips(IMessageDispatcher):
-    def __init__(self):
-        super().__init__('查看帮助', '查看帮助')
+    @property
+    def name(self) -> str:
+        return '查看帮助'
+
+    @property
+    def tips(self) -> str:
+        return '查看帮助'
 
     def check_auth(self, qq: str) -> bool:
         return True
@@ -43,7 +56,15 @@ class GetTips(IMessageDispatcher):
 
 class GetTips2(IMessageDispatcher):  # 处理艾特请求
     def __init__(self):
-        super().__init__('[@' + config.qq['robot_self_qq'] + ']', '')
+        self.__name = '[@%s]' % config.qq['robot_self_qq']
+
+    @property
+    def name(self) -> str:
+        return self.__name
+
+    @property
+    def tips(self) -> str:
+        return ''
 
     def check_auth(self, qq: str) -> bool:
         return True
@@ -57,8 +78,13 @@ class GetTips2(IMessageDispatcher):  # 处理艾特请求
 
 
 class Test(IMessageDispatcher):
-    def __init__(self):
-        super().__init__('测试', '测试')
+    @property
+    def name(self) -> str:
+        return '测试'
+
+    @property
+    def tips(self) -> str:
+        return '测试'
 
     def check_auth(self, qq: str) -> bool:
         return True

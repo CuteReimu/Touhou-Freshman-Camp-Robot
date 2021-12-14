@@ -3,6 +3,7 @@ import message_admin
 import message_live
 import message_schedule
 import message_whitelist
+import message_vote
 
 
 def __init_message(msg: message.IMessageDispatcher):
@@ -15,6 +16,7 @@ def init_message():
     message_admin.on_init()
     message_whitelist.on_init()
     message_schedule.on_init()
+    message_vote.on_init()
     # __init_message(message.Test())
     __init_message(message.GetTips())
     __init_message(message.GetTips2())
@@ -32,3 +34,9 @@ def init_message():
     __init_message(message_schedule.AddSchedule())
     __init_message(message_schedule.DelSchedule())
     __init_message(message_schedule.ListAllSchedule())
+    __init_message(message_vote.AddVote())
+    __init_message(message_vote.DelVote())
+    __init_message(message_vote.ShowVote())
+    __init_message(message_vote.DoVote())
+    __init_message(message_vote.AddVoteForbiddenWords())
+    __init_message(message_vote.DelVoteForbiddenWords())

@@ -29,7 +29,6 @@ class NewVideoPusher():
 
     def __push_new_video(self):
         new_video_list = self.__get_new_video()
-        print(new_video_list)
         if len(new_video_list) != 0:
             for i in new_video_list:
                 for j in config.schedule['qq_group']:

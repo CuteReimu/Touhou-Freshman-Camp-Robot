@@ -199,14 +199,10 @@ class Bilibili:
         else:
             return video_info['data']
 
-    def get_user_vedio(self, mid:int, pn:int, ps:int, order:str, tid:int, keyword:str):
-        if mid is None and mid != 0:
+    def get_user_vedio(self, mid:int, pn:int=1, ps:int=25, order:str='', tid:int=None, keyword:str=''):
+        if mid == None:
             logger.error('必须填写mid')
             return None
-        if pn is None:
-            pn = 1
-        if ps is None:
-            ps = 10
         res = requests.request(
             method='GET',
             url="http://api.bilibili.com/x/space/arc/search",
@@ -220,7 +216,8 @@ class Bilibili:
             return None
         user_vedio = json.loads(res.content.decode('utf-8'))
         if user_vedio['code'] == 0:
-            return user_vedio['data']['list']['vlist']
+            vlist = user_vedio['data']['list']['vlist']
+            return vlist
         else:
             logger.info('获取用户视频列表失败，错误码：%d，错误信息1：%s',
                         user_vedio['code'], user_vedio['message'])

@@ -199,7 +199,8 @@ class Bilibili:
         else:
             return video_info['data']
 
-    def get_user_video(self, mid:int, pn:int=1, ps:int=25, order:str='', tid:int=0, keyword:str='') -> list:
+    def get_user_video(self, mid: int, pn: int = 1, ps: int = 25, order: str = '', tid: int = 0,
+                       keyword: str = '') -> list:
         res = requests.request(
             method='GET',
             url="http://api.bilibili.com/x/space/arc/search",

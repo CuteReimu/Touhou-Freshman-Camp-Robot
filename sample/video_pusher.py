@@ -1,8 +1,10 @@
-import chat_pipeline_manager
 import os
-from schedule import schedule
-from bilibili import bili
+
+import chat_pipeline_manager
 import config
+from bilibili import bili
+from schedule import schedule
+
 
 class NewVideoPusher:
     def __init__(self, mid):
@@ -33,8 +35,9 @@ class NewVideoPusher:
             for i in new_video_list:
                 for j in config.schedule['qq_group']:
                     chat_pipeline_manager.deal_with_msg(j, '', i)
-    
+
     def start(self):
         schedule.add(config.schedule['video_push_delay'], self.__push_new_video)
+
 
 videoPusher = NewVideoPusher(config.bilibili['mid'])

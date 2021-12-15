@@ -35,6 +35,7 @@ class NewVideoPusher:
             for i in new_video_list:
                 for j in config.schedule['qq_group']:
                     chat_pipeline_manager.deal_with_msg(j, '', i)
+        self.start()
 
     def start(self):
         schedule.add(config.schedule['video_push_delay'], self.__push_new_video)

@@ -4,6 +4,7 @@ import chat_pipeline_manager
 import config
 from bilibili import bili
 from schedule import schedule
+from logger import logger
 
 
 class NewVideoPusher:
@@ -25,8 +26,11 @@ class NewVideoPusher:
                 i += 1
         if self.__lastestId != video_list[0]['bvid']:
             self.__lastestId = video_list[0]['bvid']
-            with open('../latestvideo.txt', 'w') as f:
-                f.write(video_list[0]['bvid'])
+            try:
+                with open('../latestvideo.txt', 'w') as f:
+                    f.write(video_list[0]['bvid'])
+            except IOError:
+                logger.error('save latest video\'s bvid fail')
         return new_video_list
 
     def __push_new_video(self):
@@ -38,7 +42,8 @@ class NewVideoPusher:
         self.start()
 
     def start(self):
-        schedule.add(config.schedule['video_push_delay'], self.__push_new_video)
+        schedule.add(
+            config.schedule['video_push_delay'], self.__push_new_video)
 
 
 videoPusher = NewVideoPusher(config.bilibili['mid'])

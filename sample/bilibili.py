@@ -8,6 +8,7 @@ import rsa
 
 import config
 import myqq
+import chat_pipeline
 from logger import logger
 
 
@@ -178,12 +179,18 @@ class Bilibili:
         else:
             myqq.send_group_message(qq_group_num, '直播间标题已修改为：' + title)
 
-    def get_video_info(self, aid: int = 0, bid: str = None):
+    def get_video_info(self, qq_group_number: str, qq: str, aid: int = 0,
+                       bid: str = None, short_url: str = None):
         if aid != 0:
             url = 'https://api.bilibili.com/x/web-interface/view?aid={0}'.format(
                 aid)
         elif bid is not None and bid != '':
             url = 'https://api.bilibili.com/x/web-interface/view?bvid=' + bid
+        elif short_url is not None and short_url != '':
+            msg = requests.get(short_url).url
+            # 直接调用chat_pipeline_bilibili_video
+            chat_pipeline.pipelines[1].execute(qq_group_number, qq, msg)
+            return
         else:
             logger.error('aid和bvid至少要填一项')
             return None

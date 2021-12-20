@@ -192,7 +192,7 @@ class Bilibili:
             chat_pipeline.pipelines[1].execute(qq_group_number, qq, msg)
             return
         else:
-            logger.error('aid和bvid至少要填一项')
+            logger.error('aid，bvid和short_url至少要填一项')
             return None
         resp = requests.request(method='GET', url=url, cookies=self.cookies)
         if resp.status_code != 200:

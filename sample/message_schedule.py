@@ -59,35 +59,39 @@ def __custom_sorted_fun(data1: tuple[datetime, str, list[timedelta]],
 __custom_sorted = __custom_sorted_fun
 
 
+def __do_action():
+    now = datetime.fromtimestamp(time.time())
+    pop_id = []
+    for data_id in range(len(schedule_cache)):
+        data = schedule_cache[data_id]
+        date_obj = data.date_obj
+        if now >= date_obj:
+            pop_id.append(data_id)
+            continue
+        msg = data.tips
+        deltas = data.deltas
+        pop_idx = []
+        for delta_idx in range(len(deltas)):
+            if now >= date_obj - deltas[delta_idx]:
+                pop_idx.append(delta_idx)
+        if pop_idx:
+            for qq_group_number in config.schedule['qq_group']:
+                myqq.send_group_message(qq_group_number, '温馨提醒：\n{0} 将于{1}开始'.format(msg, date_obj))
+            pop_idx.reverse()
+            for idx in pop_idx:
+                deltas.pop(idx)
+    if pop_id:
+        pop_id.reverse()
+        for data_id in pop_id:
+            schedule_cache.pop(data_id)
+        update_schedule_file()
+
+
 def __action():
     write_lock = lock.gen_wlock()
     write_lock.acquire()
     try:
-        now = datetime.fromtimestamp(time.time())
-        pop_id = []
-        for data_id in range(len(schedule_cache)):
-            data = schedule_cache[data_id]
-            date_obj = data.date_obj
-            if now >= date_obj:
-                pop_id.append(data_id)
-                continue
-            msg = data.tips
-            deltas = data.deltas
-            pop_idx = []
-            for delta_idx in range(len(deltas)):
-                if now >= date_obj - deltas[delta_idx]:
-                    pop_idx.append(delta_idx)
-            if pop_idx:
-                for qq_group_number in config.schedule['qq_group']:
-                    myqq.send_group_message(qq_group_number, '温馨提醒：\n{0} 将于{1}开始'.format(msg, date_obj))
-                pop_idx.reverse()
-                for idx in pop_idx:
-                    deltas.pop(idx)
-        if pop_id:
-            pop_id.reverse()
-            for data_id in pop_id:
-                schedule_cache.pop(data_id)
-            update_schedule_file()
+        __do_action()
     except Exception as e:
         logger.error(str(e))
     finally:

@@ -179,7 +179,7 @@ class Bilibili:
         else:
             myqq.send_group_message(qq_group_num, '直播间标题已修改为：' + title)
 
-    def get_video_info(self, qq_group_number: str, qq: str, aid: int = 0,
+    def get_video_info(self, qq_group_number: str = '', qq: str = '', aid: int = 0,
                        bid: str = None, short_url: str = None):
         if aid != 0:
             url = 'https://api.bilibili.com/x/web-interface/view?aid={0}'.format(

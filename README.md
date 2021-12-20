@@ -29,7 +29,7 @@
 ## 安装方法
 1. 安装python包依赖
 ```bash
-python setup.py install
+pip install -r requirements.txt
 ```
 2. 下载并安装mirai，其中http-api要手动安装最新版的（脚本不会安装最新版）
 3. 在mirai的安装路径下找到`config/net.mamoe.mirai-api-http/setting.yml`，并进行如下配置：

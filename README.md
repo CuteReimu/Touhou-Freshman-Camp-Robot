@@ -29,7 +29,7 @@
 ## 安装方法
 1. 安装python包依赖
 ```bash
-python setup.py install
+pip install -r requirements.txt
 ```
 2. 下载并安装MyQQ，并安装MyQQ的HTTPAPI插件，登录机器人QQ号
 3. 将`config.py.template`重命名为`config.py`，并进行配置，注意要与myqq的回调和监听端口对应上

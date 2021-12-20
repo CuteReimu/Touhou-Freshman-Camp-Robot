@@ -18,7 +18,6 @@ def __init_chat_pipeline(pipeline: chat_pipeline.IChatPipeline):
 
 def init_chat_pipeline():
     __init_chat_pipeline(chat_pipeline.MessagePipeline())
-    # bilibili.py: 191 line 直接调用了chat_pipeline_bilibili_video，新的pipeline尽量在最下面添加，不要改变顺序
     __init_chat_pipeline(chat_pipeline_bilibili_video.BilibiliVideoPipeline())
     __init_chat_pipeline(chat_pipeline_repeater_interruption.RepeaterInterruptionPipeline())
     __init_chat_pipeline(chat_pipeline_update.UpdatePipeline())

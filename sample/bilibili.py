@@ -1,14 +1,15 @@
 import base64
 import json
+import re
 from sys import stdin
 
 import requests
 import requests.utils
 import rsa
 
+import chat_pipeline_manager
 import config
 import myqq
-import chat_pipeline
 from logger import logger
 
 
@@ -189,7 +190,8 @@ class Bilibili:
         elif short_url is not None and short_url != '':
             msg = requests.get(short_url).url
             # 直接调用chat_pipeline_bilibili_video
-            chat_pipeline.pipelines[1].execute(qq_group_number, qq, msg)
+            if not re.search(r'https?://b23\.tv/[0-9A-Za-z]{7}', msg, re.I):  # 防止套娃
+                chat_pipeline_manager.deal_with_msg(qq_group_number, qq, msg)
             return None
         else:
             logger.error('aid，bvid和short_url至少要填一项')

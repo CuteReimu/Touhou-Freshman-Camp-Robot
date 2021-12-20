@@ -21,7 +21,7 @@ class BilibiliVideoPipeline(chat_pipeline.IChatPipeline):
             else:
                 match_obj = re.match(r'^https?://b23\.tv/[0-9A-Za-z]{7}$', msg, re.I)
                 if match_obj:
-                    resp = bili.get_video_info(qq_group_number=qq_group_number, qq=qq, short_url=match_obj.group(0))
+                    bili.get_video_info(qq_group_number=qq_group_number, qq=qq, short_url=match_obj.group(0))
         if resp is not None:
             pic_url = '[pic=%s]' % resp['pic']
             url = 'https://www.bilibili.com/video/' + resp['bvid']

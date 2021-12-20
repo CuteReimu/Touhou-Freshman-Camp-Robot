@@ -190,7 +190,7 @@ class Bilibili:
             msg = requests.get(short_url).url
             # 直接调用chat_pipeline_bilibili_video
             chat_pipeline.pipelines[1].execute(qq_group_number, qq, msg)
-            return
+            return None
         else:
             logger.error('aid，bvid和short_url至少要填一项')
             return None

@@ -2,7 +2,7 @@
 
 # 东方Project沙包聚集地机器人
 ![](https://img.shields.io/github/languages/top/CuteReimu/Touhou-Freshman-Camp-Robot "语言")
-[![](https://img.shields.io/github/workflow/status/CuteReimu/Touhou-Freshman-Camp-Robot/Python application)](https://github.com/CuteReimu/Touhou-Freshman-Camp-Robot/actions/workflows/python-test.yml "代码分析")
+[![](https://img.shields.io/github/workflow/status/CuteReimu/Touhou-Freshman-Camp-Robot/python-test)](https://github.com/CuteReimu/Touhou-Freshman-Camp-Robot/actions/workflows/python-test.yml "代码分析")
 [![](https://img.shields.io/github/contributors/CuteReimu/Touhou-Freshman-Camp-Robot)](https://github.com/CuteReimu/Touhou-Freshman-Camp-Robot/graphs/contributors "贡献者")
 [![](https://img.shields.io/github/license/CuteReimu/Touhou-Freshman-Camp-Robot)](https://github.com/CuteReimu/Touhou-Freshman-Camp-Robot/blob/master/LICENSE "许可协议")
 </div>

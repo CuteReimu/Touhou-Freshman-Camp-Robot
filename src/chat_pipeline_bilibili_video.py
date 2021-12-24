@@ -10,7 +10,7 @@ class BilibiliVideoPipeline(chat_pipeline.IChatPipeline):
         pass
 
     def execute(self, qq_group_number: str, qq: str, msg: str) -> str:
-        match_obj = re.search(r'(?:https?://www\.bilibili\.com/video/)?av(\d{8})', msg, re.I)
+        match_obj = re.search(r'(?:https?://www\.bilibili\.com/video/|\A)av(\d+)', msg, re.I)
         resp = None
         if match_obj:
             resp = bili.get_video_info(aid=int(match_obj.group(1)))

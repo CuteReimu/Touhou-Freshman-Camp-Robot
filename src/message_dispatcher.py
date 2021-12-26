@@ -2,8 +2,9 @@ import message
 import message_admin
 import message_live
 import message_schedule
-import message_whitelist
+import message_thwiki
 import message_vote
+import message_whitelist
 
 
 def __init_message(msg: message.IMessageDispatcher):
@@ -40,3 +41,4 @@ def init_message():
     __init_message(message_vote.DoVote())
     __init_message(message_vote.AddVoteForbiddenWords())
     __init_message(message_vote.DelVoteForbiddenWords())
+    __init_message(message_thwiki.GetEvents())

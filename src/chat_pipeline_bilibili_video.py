@@ -10,16 +10,18 @@ class BilibiliVideoPipeline(chat_pipeline.IChatPipeline):
         pass
 
     def execute(self, qq_group_number: str, qq: str, msg: str) -> str:
-        match_obj = re.search(r'(?<![A-Za-z0-9])(?:https?://www\.bilibili\.com/video/)?av(\d+)', msg, re.I)
+        if '[Reply' in msg:
+            return msg
+        match_obj = re.search(r'(?<![A-Za-z0-9\W])[,\.，。]?(?:https?://www\.bilibili\.com/video/)?av(\d+)', msg, re.I)
         resp = None
         if match_obj:
             resp = bili.get_video_info(aid=int(match_obj.group(1)))
         else:
-            match_obj = re.search(r'(?<![A-Za-z0-9])(?:https?://(?:www\.bilibili\.com/video|b23\.tv)/)?bv([0-9A-Za-z]{10})', msg, re.I)
+            match_obj = re.search(r'(?<![A-Za-z0-9\W])[,\.，。]?(?:https?://(?:www\.bilibili\.com/video|b23\.tv)/)?bv([0-9A-Za-z]{10})', msg, re.I)
             if match_obj:
                 resp = bili.get_video_info(bid=match_obj.group(1))
             else:
-                match_obj = re.search(r'(?<![A-Za-z0-9])https?://b23\.tv/[0-9A-Za-z]{7}', msg, re.I)
+                match_obj = re.search(r'(?<![A-Za-z0-9\W])(?:[,\.，。])?https?://b23\.tv/[0-9A-Za-z]{7}', msg, re.I)
                 if match_obj:
                     bili.get_video_info(qq_group_number=qq_group_number, qq=qq, short_url=match_obj.group(0))
         if resp is not None:

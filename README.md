@@ -2,7 +2,7 @@
   
 # 东方Project沙包聚集地机器人
 ![](https://img.shields.io/github/languages/top/Touhou-Freshman-Camp/Touhou-Freshman-Camp-Robot "语言")
-[![](https://img.shields.io/github/workflow/status/Touhou-Freshman-Camp/Touhou-Freshman-Camp-Robot/CodeQL)](https://github.com/FlyingLu/Touhou-Freshman-Camp-Robot/actions/workflows/codeql-analysis.yml "代码分析")
+[![](https://img.shields.io/github/workflow/status/Touhou-Freshman-Camp/Touhou-Freshman-Camp-Robot/python-test)](https://github.com/FlyingLu/Touhou-Freshman-Camp-Robot/actions/workflows/python-test.yml "代码分析")
 [![](https://img.shields.io/github/contributors/Touhou-Freshman-Camp/Touhou-Freshman-Camp-Robot)](https://github.com/FlyingLu/Touhou-Freshman-Camp-Robot/graphs/contributors "贡献者")
 [![](https://img.shields.io/github/license/Touhou-Freshman-Camp/Touhou-Freshman-Camp-Robot)](https://github.com/FlyingLu/Touhou-Freshman-Camp-Robot/blob/master/LICENSE "许可协议")
 </div>

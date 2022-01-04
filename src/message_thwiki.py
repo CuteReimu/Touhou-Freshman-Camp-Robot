@@ -12,9 +12,9 @@ from logger import logging
 
 class Event:
     def __init__(self, d: dict):
-        self.start = d['startStr']
-        self.types = d['type']
-        self.desc = d['desc']
+        self.start = d.get('startStr', '')
+        self.types = d.get('type', [])
+        self.desc = d.get('desc', '')
 
     def __lt__(self, other) -> bool:
         return self.start < other.start

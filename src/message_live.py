@@ -1,7 +1,10 @@
 import message
+import message_admin
 import message_whitelist
 import myqq
 from bilibili import bili
+
+live_user = None
 
 
 class GetLiveState(message.IMessageDispatcher):
@@ -37,7 +40,9 @@ class StartLive(message.IMessageDispatcher):
     def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 0:
             return
-        bili.start_live(qq_group_number, qq)
+        if bili.start_live(qq_group_number, qq):
+            global live_user
+            live_user = qq
 
 
 class StopLive(message.IMessageDispatcher):
@@ -55,7 +60,12 @@ class StopLive(message.IMessageDispatcher):
     def execute(self, qq_group_number: str, qq: str, *args: str) -> None:
         if len(args) != 0:
             return
-        bili.stop_live(qq_group_number)
+        global live_user
+        if live_user is not None and live_user != qq and qq not in message_admin.admin_cache:
+            myqq.send_group_message('谢绝唐突关闭直播')
+            return
+        if bili.stop_live(qq_group_number):
+            live_user = None
 
 
 class ChangeLiveTitle(message.IMessageDispatcher):
@@ -74,6 +84,11 @@ class ChangeLiveTitle(message.IMessageDispatcher):
         if len(args) < 1:
             myqq.send_group_message(qq_group_number, '指令格式如下：\n修改直播标题 新标题')
             return
-        if len(args) > 10:
+        title = ' '.join(args)
+        if len(title) > 20:
             return
-        bili.change_live_title(qq_group_number, ' '.join(args))
+        global live_user
+        if live_user is not None and live_user != qq and qq not in message_admin.admin_cache:
+            myqq.send_group_message('谢绝唐突修改直播标题')
+            return
+        bili.change_live_title(qq_group_number, title)

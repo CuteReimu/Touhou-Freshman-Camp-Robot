@@ -1,4 +1,4 @@
-requests~=2.26.0
+requests~=2.27.1
 Flask~=2.0.2
 gevent~=21.8.0
 rsa~=4.7.2

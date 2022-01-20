@@ -41,7 +41,9 @@ class BilibiliVideoPipeline(chat_pipeline.IChatPipeline):
             pic_url = '[pic=%s]' % resp['pic']
             url = 'https://www.bilibili.com/video/' + resp['bvid']
             up = resp['owner']['name']
-            ret = '{0}\n{1}\n{2}\nUP主：{3}\n视频简介：{4}' \
-                .format(pic_url, resp['title'], url, up, resp['desc'])
+            desc = resp['desc']
+            if len(desc) > 100:
+                desc = desc[:100] + "。。。"
+            ret = '{0}\n{1}\n{2}\nUP主：{3}\n视频简介：{4}'.format(pic_url, resp['title'], url, up, desc)
             myqq.send_group_message(qq_group_number, ret)
         return msg

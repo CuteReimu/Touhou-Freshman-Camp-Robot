@@ -104,11 +104,11 @@ class Bilibili:
                                                                  live_status_resp['data']['online'], get_live_url())
             myqq.send_group_message(qq_group_num, msg)
 
-    def start_live(self, qq_group_num: str, qq: str) -> None:
+    def start_live(self, qq_group_num: str, qq: str) -> bool:
         bili_jct = self.cookies.get('bili_jct')
         if bili_jct is None:
             myqq.send_group_message(qq_group_num, 'B站登录过期')
-            return
+            return False
         rid = config.bilibili['room_id']
         area = config.bilibili['area_v2']
         post_msg = 'room_id={0}&platform=pc&area_v2={1}&csrf_token={2}&csrf={3}'.format(
@@ -118,28 +118,32 @@ class Bilibili:
                                 headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
             logger.error('开启直播间失败，错误码：%d', resp.status_code)
-            return
+            return False
         start_live_resp = json.loads(resp.content.decode('utf-8'))
         if start_live_resp['code'] != 0:
             logger.error('开启直播间失败，错误码：%d，错误信息1：%s，错误信息2：%s', start_live_resp['code'], start_live_resp['message'],
                          start_live_resp['msg'])
-            return
+            return False
         if start_live_resp['data']['change'] == 0:
             myqq.send_group_message(
                 qq_group_num, '直播间本来就是开启的，推流码已私聊\n直播间地址：{0}\n快来围观吧！'.format(get_live_url()))
+            success = False
         else:
             msg = '直播间已开启，推流码已私聊，别忘了修改直播间标题哦！\n直播间地址：{0}\n快来围观吧！'.format(
                 get_live_url())
             myqq.send_group_message(qq_group_num, msg)
+            success = True
         rtmp_addr = start_live_resp['data']['rtmp']['addr']
         rtmp_code = start_live_resp['data']['rtmp']['code']
         myqq.send_private_message(
             qq_group_num, qq, 'RTMP推流地址：{0}\n秘钥：{1}'.format(rtmp_addr, rtmp_code))
+        return success
 
-    def stop_live(self, qq_group_num: str) -> None:
+    def stop_live(self, qq_group_num: str) -> bool:
         bili_jct = self.cookies.get('bili_jct')
         if bili_jct is None:
-            return myqq.send_group_message(qq_group_num, 'B站登录过期')
+            myqq.send_group_message(qq_group_num, 'B站登录过期')
+            return False
         rid = config.bilibili['room_id']
         post_msg = 'room_id={0}&csrf={1}'.format(rid, bili_jct)
         resp = requests.request(method='POST', url='https://api.live.bilibili.com/room/v1/Room/stopLive',
@@ -147,21 +151,23 @@ class Bilibili:
                                 headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
             logger.error('关闭直播间失败，错误码：%d', resp.status_code)
-            return
+            return False
         stop_live_resp = json.loads(resp.content.decode('utf-8'))
         if stop_live_resp['code'] != 0:
             logger.error('关闭直播间失败，错误码：%d，错误信息1：%s，错误信息2：%s', stop_live_resp['code'], stop_live_resp['message'],
                          stop_live_resp['msg'])
-            return
+            return False
         if stop_live_resp['data']['change'] == 0:
             myqq.send_group_message(qq_group_num, '直播间本来就是关闭的')
         else:
             myqq.send_group_message(qq_group_num, '直播间已关闭')
+        return True
 
-    def change_live_title(self, qq_group_num: str, title: str) -> None:
+    def change_live_title(self, qq_group_num: str, title: str) -> bool:
         bili_jct = self.cookies.get('bili_jct')
         if bili_jct is None:
-            return myqq.send_group_message(qq_group_num, 'B站登录过期')
+            myqq.send_group_message(qq_group_num, 'B站登录过期')
+            return False
         rid = config.bilibili['room_id']
         post_msg = 'room_id={0}&title={1}&csrf={2}'.format(
             rid, title, bili_jct).encode('utf-8')
@@ -170,7 +176,7 @@ class Bilibili:
                                 headers={'Content-Type': 'application/x-www-form-urlencoded'})
         if resp.status_code != 200:
             logger.error('修改直播间标题失败，错误码：%d', resp.status_code)
-            return
+            return False
         change_live_title_resp = json.loads(resp.content.decode('utf-8'))
         if change_live_title_resp['code'] != 0:
             logger.error('修改直播间标题失败，错误码：%d，错误信息1：%s，错误信息2：%s', change_live_title_resp['code'],
@@ -179,6 +185,7 @@ class Bilibili:
             myqq.send_group_message(qq_group_num, '修改直播间标题失败，请联系管理员')
         else:
             myqq.send_group_message(qq_group_num, '直播间标题已修改为：' + title)
+        return True
 
     def get_video_info(self, qq_group_number: str = '', qq: str = '', aid: int = 0,
                        bid: str = None, short_url: str = None):

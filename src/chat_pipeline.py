@@ -1,5 +1,6 @@
 import abc
 
+import config
 import message
 import message_dispatcher
 from logger import logger

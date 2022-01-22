@@ -1,5 +1,6 @@
 import abc
 
+import config
 import message
 import message_dispatcher
 from logger import logger
@@ -30,10 +31,12 @@ class MessagePipeline(IChatPipeline):
     def on_init(self):
         message_dispatcher.init_message()
 
-    def execute(self, qq_group_number: str, qq: str, msg: str) -> str:
+    def execute(self, qq_group_number: str, qq: str, ori_msg: str) -> str:
+        at_header = '[@%s]' % config.qq['robot_self_qq']
+        msg = ori_msg.replace(at_header, '', 1).lstrip('+') if ori_msg.startswith(at_header) else ori_msg
         arr = msg.split('+')  # MyQQ会自动把空格转为加号，所以这里要用+分隔
         d = message.messages.get(arr[0])
         if d is not None and d.check_auth(qq) and '[pic={' not in msg:
             logger.info("%s说：%s", qq, msg)
             d.execute(qq_group_number, qq, *arr[1:])
-        return msg
+        return ori_msg

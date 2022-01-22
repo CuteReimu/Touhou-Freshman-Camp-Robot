@@ -20,7 +20,7 @@ def init_message():
     message_vote.on_init()
     # __init_message(message.Test())
     __init_message(message.GetTips())
-    __init_message(message.GetTips2())
+    # __init_message(message.GetTips2())
     __init_message(message_admin.GetAdmin())
     __init_message(message_admin.DelAdmin())
     __init_message(message_admin.AddAdmin())

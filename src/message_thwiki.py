@@ -70,7 +70,7 @@ class GetEvents(message.IMessageDispatcher):
             with requests.Session() as req:
                 req.mount('http://', HTTPAdapter(max_retries=3))
                 req.mount('https://', HTTPAdapter(max_retries=3))
-                resp = req.get(url='https://calendar.thwiki.cc/events/?start=%s&end=%s' % (start, end), timeout=20)
+                resp = req.get(url=f'https://calendar.thwiki.cc/events/{start}/{end}, timeout=20)
                 data = json.loads(resp.text)
                 ret_arr = []
                 for d in data['results']:
